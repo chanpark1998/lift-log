@@ -832,6 +832,8 @@ details[open]{display:flex;flex-direction:column;gap:10px}
             else if (nextEx) toast(`Next: ${nextEx.name}, then back here`);
           } else s.done = false;
           queueSave(); render();
+          // finished every set of this exercise: sync to the sheet in the background while the app is still open
+          if (s.done && arr.every(x => x.done) && settings.sheetUrl) syncSheet(true);
         };
         sets.appendChild(row);
       });

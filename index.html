@@ -111,7 +111,7 @@ h1{font-family:var(--display);font-size:2rem;letter-spacing:.02em;margin:0;text-
 .timer .lab{flex:1;font-size:.82rem;opacity:.8;line-height:1.25}
 .timer button{border:1px solid currentColor;background:transparent;color:inherit;border-radius:8px;padding:7px 10px;font-weight:600;font-size:.85rem}
 .timer.go{background:var(--good);color:#fff}
-.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:99px;font-size:.86rem;opacity:0;transition:opacity .2s;pointer-events:none;z-index:6;white-space:nowrap}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);max-width:calc(100% - 32px);text-align:center;background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:99px;font-size:.86rem;opacity:0;transition:opacity .2s;pointer-events:none;z-index:6}
 .toast.on{opacity:1}
 .tools{display:flex;gap:8px;flex-wrap:wrap}
 .tools button{border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:8px 12px;font-weight:600;font-size:.86rem}
@@ -153,6 +153,12 @@ h1{font-family:var(--display);font-size:2rem;letter-spacing:.02em;margin:0;text-
 .picked b{color:var(--ink)}
 details summary{cursor:pointer;font-size:.86rem;font-weight:600;color:var(--muted);padding:4px 0}
 details[open]{display:flex;flex-direction:column;gap:10px}
+.toggle{display:flex!important;flex-direction:row!important;gap:10px;align-items:flex-start;padding:10px;border-radius:10px;background:var(--soft);color:var(--ink)!important;font-size:.9rem!important}
+.toggle input{margin-top:3px;width:18px;height:18px}
+.toggle small{color:var(--muted)}
+.skipped{font-size:.86rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.skipped button{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:4px 10px;font-size:.8rem}
+.link{font-size:.75rem;font-weight:600;color:var(--accent);text-align:center;margin:-6px 0;letter-spacing:.04em}
 .err{color:var(--bad);font-size:.85rem;min-height:1em}
 .clock{font-family:var(--display);font-size:1.15rem;font-weight:700;font-variant-numeric:tabular-nums;color:var(--muted);padding:2px 9px;border-radius:8px;background:var(--soft)}
 .clock.run{color:var(--good)}
@@ -245,8 +251,10 @@ details[open]{display:flex;flex-direction:column;gap:10px}
     <p class="picked" id="edPicked"></p>
     <div class="row2">
       <label for="edReps">Sets × reps<input type="text" id="edReps" placeholder="3x5 or 20,15,12,10,8"></label>
-      <label for="edRest">Rest (seconds)<input type="number" id="edRest" inputmode="numeric" min="0" max="900"></label>
+      <label for="edRest">Rest after it (sec)<input type="number" id="edRest" inputmode="numeric" min="0" max="900"></label>
     </div>
+    <div class="chips" id="edRestChips" role="group" aria-label="Quick rest times"></div>
+    <label class="toggle" for="edSS" id="edSSWrap"><input type="checkbox" id="edSS"> <span><b>Superset with the next exercise</b><br><small id="edSSHint">Alternate sets with it; rest only after the second one.</small></span></label>
     <details id="edMore"><summary>More settings</summary>
       <div class="row2">
         <label for="edInc">Weight jump (lb)<input type="number" id="edInc" inputmode="decimal" min="0.5" step="0.5"></label>
@@ -447,9 +455,30 @@ details[open]{display:flex;flex-direction:column;gap:10px}
     return id;
   }
   function effective(d){
-    const mods = (cur && cur.mods) || {};
-    return d.exercises.map(ex => ({ slot: ex.id, ex: mods[ex.id] || ex, swapped: !!mods[ex.id] }))
+    const mods = (cur && cur.mods) || {}, skip = (cur && cur.skip) || {};
+    return d.exercises.filter(ex => !skip[ex.id]).map(ex => ({ slot: ex.id, ex: mods[ex.id] || ex, swapped: !!mods[ex.id] }))
       .concat(((cur && cur.extra) || []).map(ex => ({ slot: null, ex, extra: true })));
+  }
+
+  // superset links: an exercise can be linked to the one after it. Older program entries used A1/A2 labels for this.
+  function ssOf(list, i){
+    const it = list[i], nx = list[i+1];
+    if (!it || !nx) return false;
+    if (typeof it.ex.ss === "boolean") return it.ex.ss;
+    const g = it.ex.group || "", g2 = nx.ex.group || "";
+    return /^[A-Z]1$/.test(g) && g2 === g[0] + "2";
+  }
+  function chainStart(list, i){ while (i > 0 && ssOf(list, i-1)) i--; return i; }
+  function chainEnd(list, i){ while (ssOf(list, i)) i++; return i; }
+  function labels(list){
+    const out = []; let letter = -1;
+    list.forEach((it, i) => {
+      const s = chainStart(list, i), e = chainEnd(list, i);
+      if (i === s) letter++;
+      const L = String.fromCharCode(65 + (letter % 26));
+      out.push(e > s ? L + (i - s + 1) : L);
+    });
+    return out;
   }
 
   /* ---------- next-session progression ---------- */
@@ -582,7 +611,7 @@ details[open]{display:flex;flex-direction:column;gap:10px}
     const d = day(); if (!d) { cur = null; return; }
     const existing = sessions.find(s => s.id === docId());
     cur = existing ? clone(existing) : { id: docId(), date, dayId, sets:{} };
-    cur.mods = cur.mods || {}; cur.extra = cur.extra || [];
+    cur.mods = cur.mods || {}; cur.extra = cur.extra || []; cur.skip = cur.skip || {};
     effective(d).forEach(({ ex }) => { if (!Array.isArray(cur.sets[ex.id])) cur.sets[ex.id] = freshSets(ex); });
   }
   const KEY = "liftlog.v1";
@@ -595,7 +624,7 @@ details[open]{display:flex;flex-direction:column;gap:10px}
     if (!cur) return;
     const d = day(), exInfo = {};
     if (d) effective(d).forEach(({ ex }) => { exInfo[ex.id] = { name: ex.name }; });
-    const body = { id: cur.id, date: cur.date, dayId: cur.dayId, sets: clone(cur.sets), mods: clone(cur.mods || {}), extra: clone(cur.extra || []), exInfo, startedAt: cur.startedAt || null, lastAt: cur.lastAt || null, updatedAt: new Date().toISOString() };
+    const body = { id: cur.id, date: cur.date, dayId: cur.dayId, sets: clone(cur.sets), mods: clone(cur.mods || {}), extra: clone(cur.extra || []), skip: clone(cur.skip || {}), exInfo, startedAt: cur.startedAt || null, lastAt: cur.lastAt || null, updatedAt: new Date().toISOString() };
     const i = sessions.findIndex(s => s.id === body.id);
     if (i >= 0) sessions[i] = body; else sessions.push(body);
     writeStore();
@@ -676,8 +705,15 @@ details[open]{display:flex;flex-direction:column;gap:10px}
     const ex = editing.ex;
     $("edTitle").textContent = mode === "add" ? "Add exercise" : "Edit or swap exercise";
     $("edErr").textContent = ""; $("edScopeToday").checked = true; $("edMore").open = false;
-    $("edRemove").style.display = (mode === "edit" && (editing.extraIndex != null || editing.swapped)) ? "inline-block" : "none";
-    $("edRemove").textContent = editing.swapped ? "Undo today's swap" : "Remove from today";
+    $("edRemove").style.display = mode === "edit" ? "inline-block" : "none";
+    editing.confirmDel = false; setRemoveLabel();
+    $("edSSWrap").style.display = (mode === "edit" && editing.nextName) || mode === "add" ? "flex" : "none";
+    $("edSS").checked = !!editing.ss;
+    $("edSSHint").textContent = mode === "add" ? "Links it with whatever you add after it." : `Alternate sets with ${editing.nextName || "the next exercise"}; rest only after that one.`;
+    $("edRestChips").innerHTML = [60,90,120,150,180,240,300].map(s => `<button type="button" class="chip" data-s="${s}">${s >= 60 ? (s/60) + " min" : s + " s"}</button>`).join("");
+    const markRest = () => [...$("edRestChips").children].forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.s === +$("edRest").value)));
+    [...$("edRestChips").children].forEach(b => b.onclick = () => { $("edRest").value = b.dataset.s; markRest(); });
+    $("edRest").oninput = markRest; setTimeout(markRest, 0);
     if (ex){ const m = meta(ex); editing.chip = m ? m.muscle : "All"; pick(m ? Object.assign({}, m, { name: ex.name }) : Object.assign({ muscle:"", equip:"Your custom" }, ex)); }
     else { editing.chip = "All"; editing.picked = null; $("edName").value = ""; $("edPicked").textContent = "Pick an exercise from the list, or search."; fillFrom({}, { reps:[10,10,10], rest:90, inc:5 }); renderPickList(); }
     $("editor").classList.add("on");
@@ -686,11 +722,30 @@ details[open]{display:flex;flex-direction:column;gap:10px}
   function closeEditor(){ $("editor").classList.remove("on"); editing = null; }
   $("edCancel").onclick = closeEditor;
   $("editor").addEventListener("click", e => { if (e.target === $("editor")) closeEditor(); });
+  function setRemoveLabel(){
+    if (!editing) return;
+    const prog = $("edScopeProgram").checked && editing.extraIndex == null;
+    $("edRemove").textContent = editing.confirmDel ? (prog ? "Tap again: delete from program" : "Tap again: remove from today") : (prog ? "Delete from program" : "Remove from today");
+  }
+  $("edScopeToday").addEventListener("change", () => { if (editing){ editing.confirmDel = false; setRemoveLabel(); } });
+  $("edScopeProgram").addEventListener("change", () => { if (editing){ editing.confirmDel = false; setRemoveLabel(); } });
   $("edRemove").onclick = () => {
     if (!editing) return;
-    if (editing.extraIndex != null){ const ex = cur.extra[editing.extraIndex]; cur.extra.splice(editing.extraIndex, 1); if (!(cur.sets[ex.id] || []).some(x => x.done)) delete cur.sets[ex.id]; }
-    else if (editing.swapped){ const ex = cur.mods[editing.slot]; delete cur.mods[editing.slot]; if (!(cur.sets[ex.id] || []).some(x => x.done)) delete cur.sets[ex.id]; const orig = day().exercises.find(e => e.id === editing.slot); if (orig && !cur.sets[orig.id]) cur.sets[orig.id] = freshSets(orig); }
-    queueSave(); closeEditor(); render();
+    if (!editing.confirmDel){ editing.confirmDel = true; setRemoveLabel(); setTimeout(() => { if (editing){ editing.confirmDel = false; setRemoveLabel(); } }, 4000); return; }
+    const dropSets = id => { if (!(cur.sets[id] || []).some(x => x.done)) delete cur.sets[id]; };
+    const d = day(); let msg = "Removed from today";
+    if (editing.extraIndex != null){ const ex = cur.extra[editing.extraIndex]; cur.extra.splice(editing.extraIndex, 1); dropSets(ex.id); }
+    else if ($("edScopeProgram").checked){
+      const k = d.exercises.findIndex(x => x.id === editing.slot);
+      if (k >= 0){ dropSets(d.exercises[k].id); d.exercises.splice(k, 1); }
+      if (cur.mods[editing.slot]){ dropSets(cur.mods[editing.slot].id); delete cur.mods[editing.slot]; }
+      delete cur.skip[editing.slot]; writeStore(); msg = "Deleted from your program. Past logs are kept.";
+    } else {
+      if (cur.mods[editing.slot]){ dropSets(cur.mods[editing.slot].id); delete cur.mods[editing.slot]; }
+      cur.skip[editing.slot] = true; dropSets(editing.slot);
+      msg = "Skipped for today. Tap it at the bottom to bring it back.";
+    }
+    queueSave(); closeEditor(); render(); toast(msg);
   };
   $("edForm").onsubmit = (e) => {
     e.preventDefault();
@@ -712,6 +767,7 @@ details[open]{display:flex;flex-direction:column;gap:10px}
       purpose: $("edPurpose").value.trim(), bw: $("edBw").checked, main: $("edMain").checked,
       group: (old && old.group) || (known && known.group) || "+"
     });
+    if ($("edSSWrap").style.display !== "none") ex.ss = $("edSS").checked;
     delete ex.aliases; delete ex.muscle; delete ex.equip; delete ex.warm;
     if (!sameName){ delete ex.note; ex.added = editing.mode === "add" ? "Added" : "Swapped in"; }
     // move today's logged sets when the exercise changes, then fit them to the new set count
@@ -773,6 +829,7 @@ details[open]{display:flex;flex-direction:column;gap:10px}
     if (!d || !cur) return;
     let total = 0, done = 0;
     const list = effective(d);
+    const tags = labels(list);
     list.forEach((item, ei) => {
       const ex = item.ex;
       const arr = cur.sets[ex.id] || (cur.sets[ex.id] = freshSets(ex));
@@ -782,10 +839,12 @@ details[open]{display:flex;flex-direction:column;gap:10px}
       const card = document.createElement("div");
       card.className = "card" + (complete ? " complete" : "");
       const repTxt = ex.reps.every(r => r === ex.reps[0]) ? `${ex.reps.length}×${ex.reps[0]}` : ex.reps.join(" / ");
-      const restTxt = ex.rest ? `rest ${ex.rest >= 60 ? (ex.rest/60).toFixed(ex.rest % 60 ? 1 : 0).replace(/\.0$/,"") + " min" : ex.rest + " s"}` : "straight into the next exercise";
+      const restFmt = s => s >= 60 ? (s/60).toFixed(s % 60 ? 1 : 0).replace(/\.0$/,"") + " min" : s + " s";
+      const linkedNext = ssOf(list, ei), inChain = chainStart(list, ei) < ei;
+      const restTxt = linkedNext ? `superset → straight to ${list[ei+1].ex.name}` : ex.rest ? `rest ${restFmt(ex.rest)}${inChain ? " after the superset" : ""}` : "no rest";
       const tagTxt = item.swapped ? "Swapped today" : item.extra ? "Today only" : ex.added;
       card.innerHTML = `
-        <div class="chead"><div class="tag">${esc(ex.group || "+")}</div>
+        <div class="chead"><div class="tag">${esc(tags[ei])}</div>
           <div class="ctitle"><span class="nm">${esc(ex.name)}${tagTxt ? '<span class="new">' + esc(tagTxt) + '</span>' : ""}</span>
           ${ex.purpose ? `<span class="purpose">– ${esc(ex.purpose)}</span>` : ""}
           <span class="rx">${repTxt} · ${restTxt}</span></div>
@@ -795,7 +854,7 @@ details[open]{display:flex;flex-direction:column;gap:10px}
         ${warmups(ex, arr, list.slice(0, ei))}
         ${lastLine(ex) ? `<div class="last">${esc(lastLine(ex))}</div>` : ""}
         <div class="sets"></div>`;
-      card.querySelector(".edit").onclick = () => openEditor("edit", { ex, slot: item.slot, swapped: item.swapped, extraIndex: item.extra ? cur.extra.indexOf(ex) : null });
+      card.querySelector(".edit").onclick = () => openEditor("edit", { ex, slot: item.slot, swapped: item.swapped, extraIndex: item.extra ? cur.extra.indexOf(ex) : null, ss: linkedNext, nextName: list[ei+1] ? list[ei+1].ex.name : null });
       const sets = card.querySelector(".sets");
       let n = 0;
       arr.forEach((s, i) => {
@@ -827,7 +886,10 @@ details[open]{display:flex;flex-direction:column;gap:10px}
             unlockAudio();
             const moreHere = arr.some((x,k) => k > i && !x.done);
             const nextEx = list[ei+1] && list[ei+1].ex;
-            if (ex.rest) startTimer(ex.rest, `Rest after ${ex.name}`);
+            const cs = chainStart(list, ei);
+            const chainLeft = list.slice(cs, chainEnd(list, ei) + 1).some(it => (cur.sets[it.ex.id] || []).some(x => !x.done));
+            if (ssOf(list, ei)) toast(`Superset: go to ${nextEx.name}`);
+            else if (ex.rest) startTimer(ex.rest, cs < ei && chainLeft ? `Rest, then back to ${list[cs].ex.name}` : `Rest after ${ex.name}`);
             else if (nextEx && !moreHere) toast(`Next: ${nextEx.name}`);
             else if (nextEx) toast(`Next: ${nextEx.name}, then back here`);
           } else s.done = false;
@@ -853,6 +915,13 @@ details[open]{display:flex;flex-direction:column;gap:10px}
       card.appendChild(btns);
       el.appendChild(card);
     });
+    const skipped = d.exercises.filter(x => cur.skip && cur.skip[x.id]);
+    if (skipped.length){
+      const sk = document.createElement("div"); sk.className = "skipped";
+      sk.innerHTML = "<span>Skipped today:</span>";
+      skipped.forEach(x => { const b = document.createElement("button"); b.textContent = "↺ " + x.name; b.setAttribute("aria-label", "Bring back " + x.name); b.onclick = () => { delete cur.skip[x.id]; if (!cur.sets[x.id]) cur.sets[x.id] = freshSets(x); queueSave(); render(); }; sk.appendChild(b); });
+      el.appendChild(sk);
+    }
     const add = document.createElement("button");
     add.className = "ghost addex"; add.textContent = "+ Add exercise";
     add.onclick = () => openEditor("add", {});

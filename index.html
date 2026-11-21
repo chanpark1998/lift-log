@@ -159,6 +159,92 @@ details[open]{display:flex;flex-direction:column;gap:10px}
 .skipped{font-size:.86rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .skipped button{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:4px 10px;font-size:.8rem}
 .link{font-size:.75rem;font-weight:600;color:var(--accent);text-align:center;margin:-6px 0;letter-spacing:.04em}
+.prep summary{list-style:none;cursor:pointer;display:flex;gap:10px;align-items:flex-start}
+.prep summary::-webkit-details-marker{display:none}
+.prep .tag{font-size:1rem}
+.preplist{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.preprow{display:grid;grid-template-columns:42px 1fr auto;gap:10px;align-items:center}
+.preprow .chk{height:38px}
+.preprow.done .chk{background:var(--good);border-color:var(--good);color:#fff}
+.preprow.done b{color:var(--muted);text-decoration:line-through}
+.preprow b{display:block;font-weight:600;font-size:.94rem}
+.preprow small{color:var(--muted);font-size:.8rem}
+.flexday{border-style:dashed}
+.fld2{display:flex;flex-direction:column;gap:4px;font-size:.82rem;color:var(--muted);font-weight:500}
+.how{margin-top:4px}
+.how summary{font-size:.8rem;font-weight:600;color:var(--accent);padding:2px 0;list-style:none}
+.how summary::-webkit-details-marker{display:none}
+.how summary::before{content:"ⓘ "}
+.how ol{margin:6px 0;padding-left:18px;font-size:.84rem;color:var(--ink);display:flex;flex-direction:column;gap:4px}
+.how a,.demo{font-size:.8rem;font-weight:600;color:var(--accent)}
+.preprow.done .how ol{color:var(--muted)}
+.weeknav{display:flex;align-items:center;justify-content:space-between;font-size:.86rem;color:var(--muted);font-weight:600}
+.navb{min-width:44px;min-height:40px;font-size:1.1rem;padding:0}
+.strip{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;height:60px;border-radius:12px;border:1px solid var(--line);background:var(--surface);padding:0}
+.tile.restday{background:transparent;border-style:dashed}
+.tile.sel{background:var(--soft)}
+.tile.today{border:2px solid var(--accent)}
+.twd{font-size:.68rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.tile.today .twd{color:var(--accent)}
+.tnum{font-family:var(--display);font-size:1.2rem;font-weight:700;line-height:1}
+.dot{width:9px;height:9px;border-radius:50%;box-sizing:border-box;border:2px solid var(--muted)}
+.st-done .dot{background:var(--good);border-color:var(--good)}
+.st-started .dot{border-color:var(--good);background:linear-gradient(90deg,var(--good) 50%,transparent 50%)}
+.st-missed .dot{border-color:var(--warn)}
+.st-skipped .dot{border-color:var(--line);background:var(--line)}
+.st-rest .dot{border-style:dashed}
+.weeksum{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:44px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-size:.86rem;text-align:left}
+.planlink{color:var(--accent);font-weight:600;white-space:nowrap}
+.planhead{display:flex;align-items:center;gap:10px}
+.planhead h2{margin:0;font-family:var(--display);font-size:1.7rem;text-transform:uppercase}
+.hh2{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.disp{font-family:var(--display);font-size:1.3rem;text-transform:uppercase}
+.restpick .chip{min-height:44px;padding:0;border-radius:10px}
+.restchip{background:var(--line)!important;color:var(--ink)!important;border-style:dashed!important}
+.prow{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:8px;align-items:center;min-height:48px;border:0;border-top:1px solid var(--line);background:transparent;text-align:left;padding:4px 0}
+.prow.open{background:var(--soft)}
+.pwd{font-family:var(--display);font-size:1.05rem;color:var(--accent)}
+.pnm{display:block;font-weight:600;font-size:.94rem}
+.prow small,.popt small,.brow small,.bday small{display:block;color:var(--muted);font-size:.78rem}
+.pmin{font-size:.82rem;font-weight:600;color:var(--good);white-space:nowrap}
+.pmin.over{color:var(--warn)}
+.popts{display:flex;flex-direction:column;gap:4px;padding:4px 0 10px 48px}
+.popt{display:flex;justify-content:space-between;gap:8px;align-items:center;min-height:44px;padding:0 10px;border-radius:9px;border:1px solid var(--line);background:var(--bg);text-align:left;font-size:.86rem}
+.popt.warn small{color:var(--warn)}
+.rline{display:grid;grid-template-columns:18px minmax(0,1fr);gap:8px;font-size:.86rem}
+.okc{color:var(--good);font-weight:700}.warnc{color:var(--warn);font-weight:700}
+.missed{display:flex;flex-direction:column;gap:8px;padding:14px;border-radius:14px;border:1px solid var(--warn);background:var(--surface)}
+.mtag{font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--warn)}
+.mrow{display:grid;grid-template-columns:40px minmax(0,1fr);gap:8px;font-size:.9rem}
+.mrow b{font-family:var(--display);color:var(--accent)}
+.mrow small{color:var(--muted)}
+.goalline{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center;font-size:.8rem;color:var(--muted)}
+.gbar{height:6px;background:var(--soft);border-radius:99px;overflow:hidden;display:block}
+.gbar span{display:block;height:100%;background:var(--accent)}
+.gbar.big{height:10px}
+.goal{display:flex;flex-direction:column;gap:6px;padding-top:6px;border-top:1px solid var(--line)}
+.goalform{display:flex;flex-direction:column;gap:8px}
+.goalform select,.goalform input,.exnote textarea{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:9px;padding:9px 10px;font:inherit}
+.exnote{font-size:.84rem;font-style:italic;color:var(--muted);display:flex;gap:8px;align-items:baseline;justify-content:space-between}
+.exnote.edit{flex-direction:column;align-items:stretch;font-style:normal}
+.linkbtn{border:0;background:none;color:var(--accent);font-weight:600;font-size:.8rem;padding:6px 0;min-height:32px;text-align:left;font-style:normal}
+.addnote{align-self:flex-start}
+.vrow{display:grid;grid-template-columns:96px minmax(0,1fr) 86px;gap:8px;align-items:center;font-size:.8rem}
+.vtrack{position:relative;height:10px;background:var(--soft);border-radius:99px}
+.vband{position:absolute;left:41.6%;width:41.7%;top:0;bottom:0;background:var(--line);opacity:.9}
+.vbar{position:absolute;left:0;top:2px;height:6px;border-radius:99px}
+.vnum{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.bday{border-top:1px solid var(--line);padding:6px 0}
+.bday summary{display:flex;justify-content:space-between;gap:8px;align-items:center;cursor:pointer;min-height:44px;list-style:none}
+.bday summary::-webkit-details-marker{display:none}
+.bex{display:flex;flex-direction:column;gap:6px;padding:4px 0 6px}
+.brow{font-size:.86rem}
+.card.dashed{border-style:dashed}
+.flexall>summary{cursor:pointer;color:var(--accent);font-weight:600;min-height:44px;display:flex;align-items:center;justify-content:center;list-style:none}
+.flexall>summary::-webkit-details-marker{display:none}
+.flexall[open]{display:flex;flex-direction:column;gap:12px}
+.chip:disabled{opacity:.4}
 .err{color:var(--bad);font-size:.85rem;min-height:1em}
 .clock{font-family:var(--display);font-size:1.15rem;font-weight:700;font-variant-numeric:tabular-nums;color:var(--muted);padding:2px 9px;border-radius:8px;background:var(--soft)}
 .clock.run{color:var(--good)}
@@ -196,17 +282,22 @@ details[open]{display:flex;flex-direction:column;gap:10px}
   <div id="status" class="banner" style="display:none"></div>
   <section id="view-train" style="display:flex;flex-direction:column;gap:14px">
     <div class="bk" id="bkBanner" hidden><span id="bkText"></span><button id="bkNow">Back up now</button></div>
-    <div class="days" id="days"></div>
+    <div id="strip" style="display:flex;flex-direction:column;gap:8px"></div>
+    <div id="banners" style="display:flex;flex-direction:column;gap:10px"></div>
     <div class="sessbar">
       <h2 id="dayTitle"></h2>
       <span class="clock" id="clock" title="Workout time" hidden></span>
-      <label for="dateIn">Date <input type="date" id="dateIn"></label>
+      <span class="sub" id="dayDate"></span>
     </div>
     <div class="progress" aria-hidden="true"><span id="prog"></span></div>
     <div id="cards" style="display:flex;flex-direction:column;gap:12px"></div>
     <p class="foot">Each set saves when you tap the check. Tap it again to undo. Use Edit on any exercise to swap it or change sets and reps.</p>
   </section>
+  <section id="view-plan" style="display:none;flex-direction:column;gap:12px"></section>
+  <section id="view-build" style="display:none;flex-direction:column;gap:12px"></section>
   <section id="view-hist-wrap" style="display:none;flex-direction:column;gap:12px">
+    <div class="panel" id="goalPanel"></div>
+    <div class="panel" id="volPanel"></div>
     <div class="panel" id="progPanel">
       <h3>Progress</h3>
       <label class="sub" for="progSel">Exercise <select id="progSel"></select></label>
@@ -434,7 +525,1013 @@ details[open]{display:flex;flex-direction:column;gap:10px}
   BANK.forEach(b => { BANK_BY[norm(b.name)] = b; (b.aliases || []).forEach(a => { BANK_BY[norm(a)] = BANK_BY[norm(a)] || b; }); });
   const meta = ex => BANK_BY[norm(ex && ex.name)] || null;
 
+  /* ---------- warm-up & cool-down ----------
+     Built from the muscles in today's exercises. Warm-up = a few minutes of easy cardio, then
+     dynamic moves for those muscles (static holds before lifting are skipped on purpose).
+     Cool-down = short static stretches for the same muscles. secs = timed item (per side if side:true). */
+  const D = (id, name, dose, secs, side) => ({ id, name, dose, secs: secs || 0, side: !!side });
+  // short how-to cues for every warm-up drill and stretch; "Watch demo" opens a YouTube search
+  const HOWTO = {
+    cardio:["Bike, rower, or incline treadmill walk at an easy pace.","Go until you're lightly sweating and breathing a bit faster, but could still talk."],
+    armcirc:["Stand tall, arms straight out to the sides.","Make circles that start small and grow bigger, 10 forward then 10 back."],
+    pushdog:["Start in a push-up position and do one push-up.","Push your hips up and back into an upside-down V, heels toward the floor.","Hold 1 second, return to the push-up position, repeat."],
+    catcamel:["On hands and knees, hands under shoulders.","Round your back up toward the ceiling and tuck your chin (cat).","Then let your belly drop and lift your chest and head (camel). Move slowly."],
+    openbook:["Lie on your side, knees bent to 90°, arms straight out in front, palms together.","Keep the knees together and sweep the top arm up and over to the other side, following it with your eyes.","Let your chest open toward the ceiling, then return. Switch sides."],
+    hang:["Grab a pull-up bar a little wider than shoulders.","Let your body hang with relaxed shoulders, feet off the floor or lightly touching.","Breathe and let your lats stretch."],
+    pullapart:["Hold a light band at chest height with straight arms, hands shoulder-width.","Pull the band apart until it touches your chest, squeezing your shoulder blades.","Control it back to the start."],
+    dislocate:["Hold a band or broomstick with a very wide grip.","Keeping arms straight, lift it over your head and down behind your back.","Bring it back over to the front. Widen your grip if it pinches."],
+    wallslide:["Stand with your back, head and arms against a wall, elbows bent at 90° (goalpost).","Slide your arms up the wall as high as you can while keeping contact.","Slide back down, squeezing your shoulder blades."],
+    wrist:["Clasp your hands or hold arms out.","Roll the wrists in circles, 10 each direction."],
+    bwsquat:["Feet shoulder-width, toes slightly out.","Sit your hips down and back until thighs are about parallel, chest up.","Stand back up. Smooth and controlled."],
+    lunge:["Step forward and lower until both knees are near 90°.","Push through the front heel and step into the next lunge with the other leg."],
+    swingfb:["Hold a rack or wall for balance.","Swing one leg forward and back like a pendulum, gradually higher.","Keep your torso upright. Switch legs."],
+    swingss:["Face a wall or rack, hands on it for balance.","Swing one leg side to side across your body, gradually wider.","Switch legs."],
+    bridge:["Lie on your back, knees bent, feet flat near your hips.","Squeeze your glutes and lift your hips until your body is a straight line from knees to shoulders.","Pause 1 second at the top, lower slowly."],
+    inchworm:["Stand, then bend over and put your hands on the floor (bend knees if needed).","Walk your hands out to a push-up position.","Walk your feet up toward your hands and stand. Repeat."],
+    anklerock:["Half-kneel facing a wall, front foot a few inches from it.","Keeping the heel down, push the knee forward toward the wall.","Rock in and out. Move the foot back as it gets easier."],
+    bwcalf:["Stand on the edge of a step with heels hanging off, holding something for balance.","Rise up high onto your toes, then lower slowly below the step."],
+    "s-chest":["Put your forearm on a doorframe, elbow at shoulder height.","Step through the door with the same-side foot until you feel a chest stretch.","Hold, breathing slowly. Switch sides."],
+    "s-child":["Kneel, sit back on your heels and reach your arms forward on the floor.","Walk both hands toward one side to stretch the opposite side of your back.","Hold, then switch."],
+    "s-lat":["Hold a rack upright at about waist height with one hand.","Sit your hips back and let that arm stretch long, chest dropping slightly.","Feel it along the side of your back. Switch sides."],
+    "s-xbody":["Bring one straight arm across your chest.","Use the other arm to gently pull it closer, just above the elbow.","Keep that shoulder down, away from your ear."],
+    "s-bicep":["Put your palm flat on a wall behind you at shoulder height, fingers pointing back.","Slowly turn your body away from the wall until you feel the front of the arm stretch."],
+    "s-tricep":["Raise one arm and bend the elbow so your hand drops behind your head.","Use the other hand to gently push the elbow down and back."],
+    "s-quad":["Stand on one leg, holding something for balance.","Grab the other ankle and pull the heel toward your glute.","Keep knees together and squeeze the glute to stretch further."],
+    "s-ham":["Put one heel on a low bench or step, leg straight.","Keep your back flat and hinge forward from the hips until you feel the back of the leg."],
+    "s-glute":["Lie on your back, cross one ankle over the opposite knee (a figure 4).","Pull the bottom leg toward your chest until you feel the stretch in the crossed leg's glute."],
+    "s-calf":["Hands on a wall, one foot back with the leg straight and the heel down.","Lean into the wall until you feel the calf. Keep the heel planted."],
+    "s-cobra":["Lie face down, hands under your shoulders.","Press up, lifting your chest while your hips stay on the floor. Relax your glutes."],
+    "f-hipflex":["Kneel on one knee (use a pad), other foot forward.","Squeeze the glute of the kneeling leg and shift your hips slightly forward.","Feel it in the front of the hip. Don't arch your lower back."],
+    "f-ham":["Lie on your back, loop a strap or towel around one foot.","Raise that leg straight up, gently pulling with the strap. Keep the other leg flat on the floor."],
+    "f-9090":["Sit with your front leg bent 90° in front of you and your back leg bent 90° to the side.","Sit tall, then lean your chest forward over the front shin.","Switch which leg is in front."],
+    "f-pigeon":["From a push-up position, bring one knee forward behind your wrist, shin angled across.","Slide the other leg straight back and lower your hips.","Easier version: the lying figure-4 stretch."],
+    "f-adductor":["Kneel on hands and knees, then widen your knees as far as is comfortable (frog).","Rock your hips gently back toward your heels and forward.","Or stand in a very wide stance and shift side to side."],
+    "f-squat":["Feet shoulder-width or a little wider, toes out.","Sit down as deep as you can with heels on the floor, holding a rack if needed.","Push your knees out with your elbows and keep your chest up."],
+    "f-calf":["Hands on a wall, back leg straight and heel down. Hold half the time.","Then bend the back knee slightly, keeping the heel down, for the deeper ankle stretch."],
+    "f-pec":["Forearm on a doorframe, elbow at shoulder height.","Step through until you feel the chest and front of the shoulder stretch. Switch sides."],
+    "f-lat":["Hold a rack or doorframe at about waist height with one or both hands.","Sit your hips back and let your arms and back stretch long."],
+    "f-tspine":["Lie with a foam roller across your upper back (or lean back over a bench edge).","Support your head, then let your upper back bend back over it.","Breathe out to sink further. Keep your lower back still."],
+    "f-overhead":["Kneel facing a bench, elbows on the bench, hands together.","Sit your hips back toward your heels and let your chest drop toward the floor."]
+  };
+  const ytLink = q => "https://www.youtube.com/results?search_query=" + encodeURIComponent(q);
+  function howBlock(x, extra){
+    const steps = HOWTO[x.id];
+    if (!steps) return "";
+    return `<details class="how"><summary>How to</summary><ol>${steps.map(s => `<li>${esc(s)}</li>`).join("")}</ol><a href="${ytLink(x.name + " " + (extra || "how to"))}" target="_blank" rel="noopener">▶ Watch demo</a></details>`;
+  }
+
+  const PREP = {
+    general: [D("cardio","Easy cardio (bike, rower or incline walk)","5 min, light sweat",300)],
+    warm: {
+      "Chest":               [],
+      "Back":                [],
+      "Shoulders":           [],
+      "Biceps":              [],
+      "Triceps":             [],
+      "Quads":               [],
+      "Hamstrings & Glutes": [],
+      "Calves":              [],
+      "Core":                []
+    },
+    cool: {
+      "Chest":               [D("s-chest","Doorway chest stretch","30 s per side",30,true)],
+      "Back":                [D("s-child","Child's pose with side reach","45 s",45), D("s-lat","Lat stretch holding a rack","30 s per side",30,true)],
+      "Shoulders":           [D("s-xbody","Cross-body shoulder stretch","30 s per side",30,true)],
+      "Biceps":              [D("s-bicep","Wall biceps stretch","30 s per side",30,true)],
+      "Triceps":             [D("s-tricep","Overhead triceps stretch","30 s per side",30,true)],
+      "Quads":               [D("s-quad","Standing quad stretch","30 s per side",30,true)],
+      "Hamstrings & Glutes": [D("s-ham","Standing hamstring stretch","30 s per side",30,true), D("s-glute","Figure-4 glute stretch","30 s per side",30,true)],
+      "Calves":              [D("s-calf","Wall calf stretch","30 s per side",30,true)],
+      "Core":                [D("s-cobra","Cobra stretch","30 s",30)]
+    }
+  };
+  function dayMuscles(list){
+    const seen = [];
+    list.forEach(it => { const m = meta(it.ex); if (m && !seen.includes(m.muscle)) seen.push(m.muscle); });
+    return seen;
+  }
+  function prepItems(kind, list){
+    const out = [], ids = new Set();
+    const add = x => { if (!ids.has(x.id)){ ids.add(x.id); out.push(x); } };
+    if (kind === "warm") PREP.general.forEach(add);
+    // round-robin across today's muscles so every muscle gets its most useful move first
+    const lists = dayMuscles(list).map(m => PREP[kind][m] || []);
+    for (let r = 0; r < 4; r++) lists.forEach(l => { if (l[r]) add(l[r]); });
+    return kind === "warm" ? out.slice(0, 7) : out.slice(0, 6);
+  }
+  function prepCard(kind, list){
+    const items = prepItems(kind, list);
+    if (!items.length) return null;
+    cur.prep = cur.prep || {};
+    const doneN = items.filter(x => cur.prep[kind + ":" + x.id]).length;
+    const mins = Math.round(items.reduce((a,x) => a + (x.secs ? x.secs * (x.side ? 2 : 1) : 40), 0) / 60);
+    const el = document.createElement("details");
+    el.className = "card prep" + (doneN === items.length ? " complete" : "");
+    el.open = doneN < items.length && (kind === "warm" ? !mainSetsDoneToday(list) : allSetsDone(list));
+    el.innerHTML = `<summary class="prephead"><span class="tag">${kind === "warm" ? "↑" : "↓"}</span><span class="ctitle"><span class="nm">${kind === "warm" ? "Warm-up" : "Cool-down stretches"}</span><span class="rx">~${Math.max(2, mins)} min · ${doneN}/${items.length} done${kind === "warm" ? " · then do the ramp-up sets shown on your first lift" : " · optional, helps flexibility"}</span></span></summary><div class="preplist"></div>`;
+    const box = el.querySelector(".preplist");
+    items.forEach(x => {
+      const key = kind + ":" + x.id, on = !!cur.prep[key];
+      const row = document.createElement("div"); row.className = "preprow" + (on ? " done" : "");
+      row.innerHTML = `<button type="button" class="chk" aria-label="Mark ${esc(x.name)} ${on ? "not done" : "done"}">${on ? "✓" : "○"}</button><span><b>${esc(x.name)}</b><small>${esc(x.dose)}</small>${howBlock(x, kind === "warm" ? "warm up drill" : "stretch")}</span>${x.secs ? `<button type="button" class="ghost" aria-label="Start a ${x.secs * (x.side ? 2 : 1)} second timer">▶ ${x.secs * (x.side ? 2 : 1) >= 60 ? (x.secs * (x.side ? 2 : 1) / 60) + " min" : x.secs * (x.side ? 2 : 1) + " s"}</button>` : ""}`;
+      row.querySelector(".chk").onclick = () => { cur.prep[key] = !on; if (!cur.prep[key]) delete cur.prep[key]; queueSave(); render(); };
+      const t = row.querySelector(".ghost");
+      if (t) t.onclick = () => { unlockAudio(); startTimer(x.secs * (x.side ? 2 : 1), x.side ? `${x.name}: switch sides at ${x.secs} s` : x.name); if (!on){ cur.prep[key] = true; queueSave(); render(); } };
+      box.appendChild(row);
+    });
+    return el;
+  }
+
+  /* ---------- flexibility routine ----------
+     Static holds, 45–60 s each (per side where marked). Done 3+ times a week this adds up to
+     the weekly stretching volume shown to improve range of motion. Focus: hips & hamstrings,
+     shoulders & upper back, calves & ankles. */
+  const FLEX = [
+    { area:"Hips & hamstrings", items:[
+      D("f-hipflex","Half-kneeling hip flexor stretch","45 s per side · squeeze the glute of the back leg",45,true),
+      D("f-ham","Lying hamstring stretch (strap or towel)","45 s per side · keep the other leg flat",45,true),
+      D("f-9090","90/90 hip stretch","45 s per side · tall chest, lean over the front shin",45,true),
+      D("f-pigeon","Pigeon or figure-4 glute stretch","45 s per side",45,true),
+      D("f-adductor","Frog or wide-stance adductor stretch","60 s · rock gently into it",60)
+    ]},
+    { area:"Calves & ankles", items:[
+      D("f-squat","Deep squat hold (hold a rack if needed)","60 s · heels down, knees out",60),
+      D("f-calf","Wall calf stretch, straight then bent knee","45 s per side · bent knee hits the ankle more",45,true)
+    ]},
+    { area:"Shoulders & upper back", items:[
+      D("f-pec","Doorway chest stretch","45 s per side · elbow at shoulder height",45,true),
+      D("f-lat","Lat stretch holding a rack or doorframe","45 s per side · sit the hips back",45,true),
+      D("f-tspine","Thoracic extension over a foam roller or bench","60 s · arms overhead, breathe out to sink",60),
+      D("f-overhead","Kneeling overhead stretch on a bench","45 s · elbows on bench, chest drops toward floor",45)
+    ]}
+  ];
+  const FLEX_ITEMS = FLEX.flatMap(g => g.items);
+  const flexSecs = x => x.secs * (x.side ? 2 : 1);
+  let guide = null; // guided run: { queue:[{key,label,secs}], i }
+  function guidePhases(){
+    const q = [];
+    FLEX_ITEMS.forEach(x => {
+      if (cur.prep["flex:" + x.id]) return;
+      if (x.side){ q.push({ key:"flex:"+x.id, label:`${x.name}: left side`, secs:x.secs }); q.push({ key:"flex:"+x.id, label:`${x.name}: right side`, secs:x.secs, last:true }); }
+      else q.push({ key:"flex:"+x.id, label:x.name, secs:x.secs, last:true });
+    });
+    return q;
+  }
+  function guideNext(){
+    if (!guide) return;
+    const ph = guide.queue[guide.i];
+    if (!ph){ guide = null; toast("Flexibility routine done"); render(); return; }
+    startTimer(ph.secs, ph.label, () => {
+      if (ph.last){ cur.prep[ph.key] = true; if (!cur.startedAt) cur.startedAt = Date.now(); cur.lastAt = Date.now(); queueSave(); render(); }
+      guide.i++;
+      const nx = guide.queue[guide.i];
+      if (!nx){ guide = null; toast("Flexibility routine done"); render(); return; }
+      startTimer(8, `Get into position: ${nx.label}`, guideNext, true);
+    });
+  }
+  function renderFlex(el, collapsed){
+    cur.prep = cur.prep || {};
+    const doneN = FLEX_ITEMS.filter(x => cur.prep["flex:" + x.id]).length;
+    const mins = Math.round(FLEX_ITEMS.reduce((a,x) => a + flexSecs(x), 0) / 60);
+    const top = document.createElement("div"); top.className = "panel";
+    top.innerHTML = `<div class="sub">${FLEX_ITEMS.length} stretches · about ${mins} min · ${doneN}/${FLEX_ITEMS.length} done. Do it 3 or more times a week, on rest days or after lifting. Ease into each hold: mild tension, never pain.</div>`;
+    const go = document.createElement("button"); go.className = "btnp";
+    go.textContent = guide ? "Stop guided routine" : (doneN ? "Continue guided routine" : "Start guided routine");
+    go.onclick = () => {
+      unlockAudio();
+      if (guide){ guide = null; clearInterval(tInt); tInt = null; $("timer").className = "timer"; render(); return; }
+      const q = guidePhases(); if (!q.length){ toast("All stretches done"); return; }
+      guide = { queue:q, i:0 }; startTimer(8, `Get into position: ${q[0].label}`, guideNext, true); render();
+    };
+    if (doneN < FLEX_ITEMS.length) top.appendChild(go);
+    el.appendChild(top);
+    let host = el;
+    if (collapsed){ const det = document.createElement("details"); det.className = "flexall"; det.open = doneN > 0 || !!guide; det.innerHTML = `<summary>See all ${FLEX_ITEMS.length} stretches</summary>`; el.appendChild(det); host = det; }
+    FLEX.forEach(g => {
+      const card = document.createElement("div"); card.className = "card prep";
+      const gd = g.items.filter(x => cur.prep["flex:" + x.id]).length;
+      if (gd === g.items.length) card.classList.add("complete");
+      card.innerHTML = `<div class="prephead chead"><span class="tag">${gd}/${g.items.length}</span><span class="ctitle"><span class="nm">${esc(g.area)}</span></span></div><div class="preplist"></div>`;
+      const box = card.querySelector(".preplist");
+      g.items.forEach(x => {
+        const key = "flex:" + x.id, on = !!cur.prep[key];
+        const row = document.createElement("div"); row.className = "preprow" + (on ? " done" : "");
+        const t = flexSecs(x);
+        row.innerHTML = `<button type="button" class="chk" aria-label="Mark ${esc(x.name)} ${on ? "not done" : "done"}">${on ? "✓" : "○"}</button><span><b>${esc(x.name)}</b><small>${esc(x.dose)}</small>${howBlock(x, "stretch")}</span><button type="button" class="ghost" aria-label="Start a ${t} second timer">▶ ${t >= 60 ? (t/60) + " min" : t + " s"}</button>`;
+        row.querySelector(".chk").onclick = () => { if (on) delete cur.prep[key]; else { cur.prep[key] = true; if (!cur.startedAt) cur.startedAt = Date.now(); cur.lastAt = Date.now(); } queueSave(); render(); };
+        row.querySelector(".ghost").onclick = () => { unlockAudio(); guide = null; startTimer(t, x.side ? `${x.name}: switch sides at ${x.secs} s` : x.name, () => { cur.prep[key] = true; if (!cur.startedAt) cur.startedAt = Date.now(); cur.lastAt = Date.now(); queueSave(); render(); }); };
+        box.appendChild(row);
+      });
+      host.appendChild(card);
+    });
+    if (dayId === "flex" || dayId === "rest") $("prog").style.width = (doneN / FLEX_ITEMS.length * 100) + "%";
+  }
+
+  /* ---------- runs ---------- */
+  const parseDur = s => { const t = String(s || "").trim(); if (!t) return null; const parts = t.split(":").map(Number); if (parts.some(x => !isFinite(x))) return null; return parts.length === 3 ? parts[0]*3600 + parts[1]*60 + parts[2] : parts.length === 2 ? parts[0]*60 + parts[1] : parts[0]*60; };
+  const fmtPace = (secs, mi) => { if (!secs || !mi) return "–"; const p = secs / mi; return `${Math.floor(p/60)}:${String(Math.round(p%60)).padStart(2,"0")} /mi`; };
+  const BREATH = [["fine","Breathing fine"],["tight","A little tight"],["stopped","Had to slow or stop"]];
+  function renderRun(el){
+    const r = cur.run = cur.run || {};
+    const panel = document.createElement("div"); panel.className = "card";
+    panel.innerHTML = `
+      <div class="chead"><div class="tag">🏃</div><div class="ctitle"><span class="nm">Easy run</span><span class="purpose">– aerobic base, recovery between lifting days</span><span class="rx">Conversational pace · 20–30 min · warm up with a brisk walk first</span></div></div>
+      <div class="row2">
+        <label class="fld2" for="runDist">Distance<span class="fld"><input id="runDist" inputmode="decimal" placeholder="2.0" value="${esc(r.dist || "")}"><span>mi</span></span></label>
+        <label class="fld2" for="runTime">Time<span class="fld"><input id="runTime" inputmode="numeric" placeholder="25:00" value="${esc(r.time || "")}"><span>m:s</span></span></label>
+      </div>
+      <div class="row2">
+        <label class="fld2" for="runHr">Avg heart rate<span class="fld"><input id="runHr" inputmode="numeric" placeholder="optional" value="${esc(r.hr || "")}"><span>bpm</span></span></label>
+        <label class="fld2" for="runTemp">Temperature<span class="fld"><input id="runTemp" inputmode="numeric" placeholder="optional" value="${esc(r.temp ?? "")}"><span>°F</span></span></label>
+      </div>
+      <div class="chips" role="group" aria-label="How was your breathing">${BREATH.map(([k,l]) => `<button type="button" class="chip" data-k="${k}" aria-pressed="${r.breath === k}">${l}</button>`).join("")}</div>
+      <label class="fld2" for="runNote">Notes<span class="fld"><input id="runNote" placeholder="route, how the dog did, anything else" value="${esc(r.note || "")}" style="padding-right:10px"></span></label>
+      <div class="live ok" id="runSum"></div>`;
+    el.appendChild(panel);
+    const sum = () => {
+      const secs = parseDur(r.time), mi = num(r.dist);
+      $("runSum").innerHTML = secs || mi ? `<div><b>${mi ? mi + " mi" : "–"}</b> in <b>${secs ? fmtDur(secs*1000) : "–"}</b> · pace <b>${fmtPace(secs, mi)}</b>${r.breath ? " · " + esc(BREATH.find(b => b[0] === r.breath)[1].toLowerCase()) : ""}</div>` : `<div>Log it after the run, straight from your watch.</div>`;
+      $("prog").style.width = (secs || mi) ? "100%" : "0";
+    };
+    const bind = (id, key) => { $(id).onchange = () => { const v = $(id).value.trim(); if (v) r[key] = v; else delete r[key]; if (!cur.startedAt) cur.startedAt = Date.now(); cur.lastAt = cur.startedAt; queueSave(); sum(); renderStrip(); }; };
+    bind("runDist","dist"); bind("runTime","time"); bind("runHr","hr"); bind("runTemp","temp"); bind("runNote","note");
+    [...panel.querySelectorAll(".chip")].forEach(b => b.onclick = () => { r.breath = r.breath === b.dataset.k ? undefined : b.dataset.k; if (!r.breath) delete r.breath; queueSave(); render(); });
+    sum();
+    // breathing vs temperature, once there's enough data to say anything
+    const runs = sessions.filter(s => runDone(s) && s.run.breath && num(s.run.temp) != null);
+    if (runs.length >= 4){
+      const cold = runs.filter(s => num(s.run.temp) < 45), warm = runs.filter(s => num(s.run.temp) >= 45);
+      const rate = a => a.length ? Math.round(a.filter(s => s.run.breath !== "fine").length / a.length * 100) : null;
+      const n = document.createElement("p"); n.className = "sub";
+      n.textContent = `Breathing trouble on ${rate(cold) ?? "–"}% of runs under 45°F (${cold.length} runs) vs ${rate(warm) ?? "–"}% at 45°F or warmer (${warm.length} runs).`;
+      el.appendChild(n);
+    }
+  }
+  function mainSetsDoneToday(list){ return list.some(it => (cur.sets[it.ex.id] || []).some(x => x.done)); }
+  function allSetsDone(list){ return list.length && list.every(it => (cur.sets[it.ex.id] || []).every(x => x.done)); }
+
   let program = null, sessions = [], dayId = null, date = today(), cur = null;
+  /* =====================================================================
+     WEEK PLANNER: schedule, week strip, rest days, recovery-aware ordering,
+     missed workouts, routine builder, notes, goals, deloads
+     ===================================================================== */
+  let plan = null; // { rest:[wd], assign:{wd:dayId}, overrides:{date:dayId|'rest'|'skip'|'done'}, notes:{}, goals:[], saved:[], trial:null, deloadWeek:null, lastDeloadEnd:null, deloadSnooze:null }
+  let view = "train", weekOffset = 0, planOpen = null, draft = null, uiFlexOnLift = false, noteEditing = null, goalForm = false;
+  const CAP_MIN = 75, CAP_LOW = 60;
+  const ymd = d => new Date(d.getTime() - d.getTimezoneOffset()*60000).toISOString().slice(0,10);
+  const parseYmd = s => { const [y,m,d] = s.split("-").map(Number); return new Date(y, m-1, d); };
+  const addDays = (s, n) => { const d = parseYmd(s); d.setDate(d.getDate() + n); return ymd(d); };
+  const wdOf = s => parseYmd(s).getDay();
+  const weekStart = s => addDays(s, -((wdOf(s) + 6) % 7)); // Monday
+  const WEEK_ORDER = [1,2,3,4,5,6,0];
+
+  function defaultPlan(){
+    const assign = {}; (program.days || []).forEach(d => { if (d.weekday != null) assign[d.weekday] = d.id; });
+    const rest = [0,1,2,3,4,5,6].filter(w => !assign[w]);
+    return { rest, assign, overrides:{}, notes:{}, goals:[], saved:[], trial:null, deloadWeek:null, lastDeloadEnd:null, deloadSnooze:null, since: today() };
+  }
+  function ensurePlan(){
+    plan = Object.assign(defaultPlan(), plan || {});
+    ["overrides","notes"].forEach(k => plan[k] = plan[k] || {});
+    ["goals","saved"].forEach(k => plan[k] = plan[k] || []);
+    // drop assignments that point at days no longer in the program
+    Object.keys(plan.assign).forEach(w => { if (!program.days.some(d => d.id === plan.assign[w])) delete plan.assign[w]; });
+    // close out a finished deload week
+    if (plan.deloadWeek && weekStart(today()) > plan.deloadWeek){ plan.lastDeloadEnd = addDays(plan.deloadWeek, 6); plan.deloadWeek = null; }
+  }
+  // what a date is planned as: {kind:'lift', dayId} | {kind:'rest'} | {kind:'skip', dayId} | {kind:'done', dayId}
+  function slotFor(ds){
+    const o = plan.overrides[ds], w = wdOf(ds), base = plan.rest.includes(w) ? null : plan.assign[w];
+    if (o === "rest") return { kind:"rest" };
+    if (o === "skip") return { kind:"skip", dayId: base };
+    if (o === "done") return { kind:"done", dayId: base };
+    if (o && program.days.some(d => d.id === o)) return { kind:"lift", dayId:o };
+    if (plan.since && ds < plan.since) return { kind:"rest" }; // before this schedule existed
+    return base ? { kind:"lift", dayId:base } : { kind:"rest" };
+  }
+  const isLiftId = id => program.days.some(d => d.id === id);
+  const liftSessionOn = ds => sessions.find(s => s.date === ds && isLiftId(s.dayId) && sessionHasWork(s)) || sessions.find(s => s.date === ds && s.dayId !== "rest" && s.dayId !== "flex" && s.dayId !== "run" && sessionHasWork(s));
+  const flexCount = s => s && s.prep ? Object.keys(s.prep).filter(k => k.startsWith("flex:")).length : 0;
+  const flexDone = s => flexCount(s) >= 6;
+  const runDone = s => !!(s && s.run && (s.run.dist || s.run.time));
+  function liftComplete(s){
+    if (!s) return false;
+    const d = program.days.find(x => x.id === s.dayId);
+    const arrs = Object.values(s.sets || {}).filter(Array.isArray);
+    if (!arrs.length) return false;
+    const done = arrs.reduce((a,x) => a + x.filter(y => y && y.done).length, 0), total = arrs.reduce((a,x) => a + x.length, 0);
+    return d ? done >= total * 0.8 : done > 0;
+  }
+  function weekStats(ws){
+    const days = [0,1,2,3,4,5,6].map(i => addDays(ws, i));
+    const inWeek = sessions.filter(s => s.date >= days[0] && s.date <= days[6]);
+    const planned = days.filter(ds => { const k = slotFor(ds).kind; return k === "lift" || k === "done" || k === "skip" || !!liftSessionOn(ds); }).length;
+    const lifted = days.filter(ds => liftSessionOn(ds) || slotFor(ds).kind === "done").length;
+    const flex = inWeek.filter(flexDone).length;
+    const runs = inWeek.filter(runDone);
+    const miles = runs.reduce((a,s) => a + (num(s.run.dist) || 0), 0);
+    return { planned, lifted, flex, runs: runs.length, miles: Math.round(miles*10)/10 };
+  }
+  function selectDate(ds){
+    date = ds;
+    const s = liftSessionOn(ds), slot = slotFor(ds);
+    dayId = s ? s.dayId : slot.kind === "lift" || slot.kind === "done" || slot.kind === "skip" ? (slot.dayId || "rest") : "rest";
+    if (slot.kind === "skip" && !s) dayId = slot.dayId;
+    uiFlexOnLift = false; loadSession(); render();
+  }
+
+  /* ---------- muscles & recovery ---------- */
+  // helper muscles: pressing works triceps (and front delts), pulling works biceps, squats/presses work glutes
+  function helpersOf(ex){
+    const n = ex.name.toLowerCase(), m = (meta(ex) || {}).muscle;
+    const h = [];
+    if ((m === "Chest" || m === "Shoulders") && /press|dip|push-up/.test(n)) h.push("Triceps");
+    if (m === "Chest" && /press|dip|push-up/.test(n)) h.push("Shoulders");
+    if (m === "Back" && /row|pulldown|pull-up|chin/.test(n)) h.push("Biceps");
+    if (m === "Quads" && /squat|press|lunge/.test(n)) h.push("Hamstrings & Glutes");
+    if (/deadlift/.test(n) && m !== "Back") h.push("Back");
+    return h;
+  }
+  function muscleSets(exList){
+    const out = {};
+    exList.forEach(ex => {
+      const m = (meta(ex) || {}).muscle; const n = ex.reps.length;
+      if (m) out[m] = (out[m] || 0) + n;
+      helpersOf(ex).forEach(h => { out[h] = (out[h] || 0) + n * 0.5; });
+    });
+    return out;
+  }
+  function dayHits(dayObj){
+    if (!dayObj) return new Set();
+    const ms = muscleSets(dayObj.exercises || []);
+    return new Set(Object.keys(ms).filter(k => ms[k] >= 3 && k !== "Core"));
+  }
+  const dayById = id => program.days.find(d => d.id === id);
+  // gap in days between two weekdays going forward around the week
+  const fwd = (a, b) => ((b - a) + 7) % 7 || 7;
+  function recoveryReport(assign){
+    // assign: {wd: dayId}
+    const ents = Object.keys(assign).map(w => ({ w:+w, id: assign[w], hits: dayHits(dayById(assign[w])) })).filter(e => e.id);
+    const byMuscle = {};
+    ents.forEach(e => e.hits.forEach(m => (byMuscle[m] = byMuscle[m] || []).push(e.w)));
+    const lines = []; let conflicts = 0, minGap = 7;
+    const name = w => WD[w];
+    Object.keys(byMuscle).sort().forEach(m => {
+      const ws = byMuscle[m].sort((a,b) => WEEK_ORDER.indexOf(a) - WEEK_ORDER.indexOf(b));
+      if (ws.length === 1){
+        if (plan.legDays === 1 && ["Quads","Hamstrings & Glutes","Calves"].includes(m)) lines.push({ ok:true, text:`${m}: once a week (${name(ws[0])}), as you chose` });
+        else if (["Chest","Back","Quads","Hamstrings & Glutes","Shoulders"].includes(m)) lines.push({ ok:false, soft:true, text:`${m}: once a week (${name(ws[0])}). Twice grows it faster.` });
+        return;
+      }
+      let worst = 7, pair = null;
+      ws.forEach((a, i) => { const b = ws[(i+1) % ws.length]; const g = fwd(a, b); if (g < worst){ worst = g; pair = [a,b]; } });
+      minGap = Math.min(minGap, worst);
+      if (worst < 2){ conflicts++; lines.push({ ok:false, text:`${m}: ${name(pair[0])} → ${name(pair[1])}, back-to-back days` }); }
+      else lines.push({ ok:true, text:`${m}: ${ws.map(name).join(" → ")}, ${worst}+ days apart` });
+    });
+    return { lines, conflicts, minGap };
+  }
+  // place workouts into open weekdays: fewest back-to-back conflicts, then most spread, then least change
+  function autoArrange(ids, openW, current){
+    const best = { score: Infinity, assign: {} };
+    const n = ids.length, slots = openW.slice();
+    if (!n) return {};
+    const used = new Array(slots.length).fill(false), pick = [];
+    const evalPick = () => {
+      const a = {}; pick.forEach((si, i) => a[slots[si]] = ids[i]);
+      const r = recoveryReport(a);
+      const lifts = Object.keys(a).map(Number);
+      let consec = 0; lifts.forEach(w => { if (lifts.includes((w + 1) % 7)) consec++; });
+      const changed = Object.keys(a).filter(w => (current || {})[w] !== a[w]).length;
+      const score = r.conflicts * 1000 - r.minGap * 50 + consec * 10 + changed;
+      if (score < best.score){ best.score = score; best.assign = a; }
+    };
+    const rec = () => { if (pick.length === n){ evalPick(); return; } for (let i = 0; i < slots.length; i++){ if (used[i]) continue; used[i] = true; pick.push(i); rec(); pick.pop(); used[i] = false; } };
+    if (slots.length >= n) rec();
+    return best.assign;
+  }
+  function touchPlan(){ plan.since = today(); }
+  function rearrange(){
+    touchPlan();
+    const open = WEEK_ORDER.filter(w => !plan.rest.includes(w));
+    const ids = program.days.map(d => d.id).slice(0, open.length);
+    plan.assign = autoArrange(ids, open, plan.assign);
+  }
+
+  /* ---------- time estimates ---------- */
+  function exMinutes(ex, linked){
+    const n = ex.reps.length, heavy = (meta(ex) || {}).warm || ex.main;
+    const work = heavy ? 0.75 : 0.6;
+    const rest = linked ? 0 : (ex.rest || 0) / 60;
+    return n * (work + rest) + 1;
+  }
+  function dayMinutes(exList){
+    let t = 8; // warm-up
+    exList.forEach((ex, i) => { t += exMinutes(ex, !!ex.ss && i < exList.length - 1); });
+    return Math.round(t);
+  }
+
+  /* ---------- missed workouts ---------- */
+  function missedThisWeek(){
+    const t = today(), ws = weekStart(t), out = [];
+    for (let i = 0; i < 7; i++){
+      const ds = addDays(ws, i); if (ds >= t) break;
+      const slot = slotFor(ds);
+      if (slot.kind === "lift" && !liftSessionOn(ds)) out.push({ ds, dayId: slot.dayId });
+    }
+    return out;
+  }
+  // best way to fit what's left of this week: fewest back-to-back conflicts, then fewest skipped workouts
+  function replan(missed){
+    const t = today(), ws = weekStart(t);
+    const future = []; for (let i = 0; i < 7; i++){ const ds = addDays(ws, i); if (ds >= t) future.push(ds); }
+    const days = future.filter(ds => ds === t || !plan.rest.includes(wdOf(ds)));
+    const pending = [missed.dayId];
+    future.forEach(ds => { const s = slotFor(ds); if (s.kind === "lift" && !liftSessionOn(ds) && !pending.includes(s.dayId)) pending.push(s.dayId); });
+    const yesterday = addDays(t, -1), ySess = liftSessionOn(yesterday);
+    const fixed = {}; if (ySess && yesterday >= ws) fixed[wdOf(yesterday)] = ySess.dayId;
+    let best = null;
+    const tryCombo = (ids, forceAll) => {
+      const open = days.map(wdOf);
+      const assign = autoArrange(ids, open, null);
+      if (Object.keys(assign).length < ids.length) return;
+      const full = Object.assign({}, fixed, assign);
+      const r = recoveryReport(full);
+      const dropped = pending.length - ids.length;
+      // prefer dropping the workout whose muscles still get trained twice this week
+      const doneIds = []; for (let i = 0; i < 7; i++){ const ds = addDays(ws, i); if (ds < t){ const s = liftSessionOn(ds); if (s) doneIds.push(s.dayId); } }
+      const count = {}; doneIds.concat(ids).forEach(id => dayHits(dayById(id)).forEach(m => count[m] = (count[m] || 0) + 1));
+      const thin = ["Chest","Back","Shoulders","Quads","Hamstrings & Glutes"].filter(m => (count[m] || 0) < 2).length;
+      const score = r.conflicts * 100 + dropped * 30 + thin * 3 + (ids.includes(missed.dayId) ? 0 : 50);
+      const cand = { assign, dropped: pending.filter(x => !ids.includes(x)), conflicts: r.conflicts, score, forceAll };
+      if (!best || score < best.score) best = cand;
+    };
+    // all, or with any one workout left out
+    tryCombo(pending, true);
+    let keepAll = best;
+    pending.forEach(x => tryCombo(pending.filter(y => y !== x), false));
+    best = best || keepAll;
+    const toPlan = c => { if (!c) return null; const rows = days.map(ds => ({ ds, dayId: c.assign[wdOf(ds)] || null })); return { rows, dropped: c.dropped, conflicts: c.conflicts }; };
+    return { recommended: toPlan(best), keepAll: toPlan(keepAll) };
+  }
+  function applyReplan(p, missedDs){
+    p.rows.forEach(r => { plan.overrides[r.ds] = r.dayId || "rest"; });
+    plan.overrides[missedDs] = "skip";
+    writeStore(); selectDate(today());
+  }
+
+  /* ---------- deloads ---------- */
+  function deloadInfo(){
+    const firstLift = sessions.filter(s => isLiftId(s.dayId) && sessionHasWork(s)).map(s => s.date).sort()[0];
+    const start = plan.lastDeloadEnd ? addDays(plan.lastDeloadEnd, 1) : (firstLift || today());
+    const weeks = Math.max(1, Math.floor((Date.parse(today()) - Date.parse(start)) / (7*86400000)) + 1);
+    const mains = []; program.days.forEach(d => d.exercises.forEach(e => { if (e.main && !mains.some(x => x.id === e.id)) mains.push(e); }));
+    const stalled = mains.filter(ex => {
+      const past = pastFor(ex.id, addDays(today(), 1)).slice(0,3);
+      if (past.length < 3) return false;
+      const ev = past.map(s => evalSession(ex, s));
+      return ev.every(e => !e.allHit) && ev.every(e => e.top === ev[0].top);
+    });
+    const dueWeek = stalled.length >= 2 && weeks >= 4 ? weeks : Math.min(8, Math.max(6, weeks));
+    const due = weeks >= 6 || (stalled.length >= 2 && weeks >= 4);
+    const active = plan.deloadWeek === weekStart(today());
+    const nextDate = addDays(start, 7 * 5); // start of week 6
+    return { weeks, due, active, stalled, nextDate, start };
+  }
+  const deloadActive = () => !!plan && plan.deloadWeek === weekStart(date || today());
+
+  /* ---------- goals ---------- */
+  function goalProgress(g){
+    const target = e1(g.w, g.r);
+    const pts = progressSeries(g.exId).filter(p => p.v > 0);
+    const hit = sessions.some(s => s.sets && (s.sets[g.exId] || []).some(x => x && x.done && !x.drop && (num(x.w) || 0) >= g.w && (num(x.r) || 0) >= g.r));
+    const curV = pts.length ? Math.max(...pts.slice(-3).map(p => p.v)) : 0;
+    const pct = target ? Math.min(100, Math.round(curV / target * 100)) : 0;
+    let eta = null;
+    const recent = pts.filter(p => Date.parse(p.date) >= Date.parse(today()) - 56 * 86400000);
+    if (recent.length >= 3 && !hit){
+      const xs = recent.map(p => Date.parse(p.date) / 86400000), ys = recent.map(p => p.v);
+      const mx = xs.reduce((a,b) => a+b, 0) / xs.length, my = ys.reduce((a,b) => a+b, 0) / ys.length;
+      const slope = xs.reduce((a,x,i) => a + (x - mx) * (ys[i] - my), 0) / Math.max(1e-9, xs.reduce((a,x) => a + (x - mx) ** 2, 0));
+      if (slope > 0.01){ const days = (target - curV) / slope; if (days > 0 && days < 730) eta = ymd(new Date(Date.now() + days * 86400000)); }
+      else eta = "flat";
+    }
+    return { pct, hit, eta, curV: Math.round(curV), target: Math.round(target) };
+  }
+  function goalLine(ex){
+    const g = plan.goals.find(x => x.exId === ex.id); if (!g) return "";
+    const p = goalProgress(g);
+    return `<div class="goalline"><span>Goal ${g.w}×${g.r}${ex.bw ? " added" : ""}</span><span class="gbar"><span style="width:${p.hit ? 100 : p.pct}%"></span></span><span>${p.hit ? "Reached" : p.pct + "%"}</span></div>`;
+  }
+
+  /* ---------- notes ---------- */
+  function noteBlock(ex){
+    const n = plan.notes[ex.id] || "";
+    if (noteEditing === ex.id) return `<div class="exnote edit"><label class="sub" for="note-${esc(ex.id)}">Note for ${esc(ex.name)}</label><textarea id="note-${esc(ex.id)}" rows="2" placeholder="Seat height, grip, anything to remember">${esc(n)}</textarea><div class="setbtns"><button type="button" class="btnp" data-note-save="${esc(ex.id)}">Save note</button><button type="button" class="ghost" data-note-cancel="1">Cancel</button></div></div>`;
+    return n ? `<div class="exnote"><span>${esc(n)}</span><button type="button" class="linkbtn" data-note-edit="${esc(ex.id)}">Edit note</button></div>`
+             : `<button type="button" class="linkbtn addnote" data-note-edit="${esc(ex.id)}">+ Add note</button>`;
+  }
+  function wireNotes(card){
+    card.querySelectorAll("[data-note-edit]").forEach(b => b.onclick = () => { noteEditing = b.dataset.noteEdit; render(); const t = document.getElementById("note-" + noteEditing); if (t) t.focus(); });
+    card.querySelectorAll("[data-note-cancel]").forEach(b => b.onclick = () => { noteEditing = null; render(); });
+    card.querySelectorAll("[data-note-save]").forEach(b => b.onclick = () => { const id = b.dataset.noteSave, t = document.getElementById("note-" + id); const v = (t && t.value || "").trim(); if (v) plan.notes[id] = v; else delete plan.notes[id]; noteEditing = null; writeStore(); render(); });
+  }
+
+  /* ---------- week strip & banners (Train view) ---------- */
+  function renderStrip(){
+    const el = $("strip"); el.innerHTML = "";
+    if (!program) return;
+    const t = today(), ws = addDays(weekStart(t), weekOffset * 7);
+    const nav = document.createElement("div"); nav.className = "weeknav";
+    nav.innerHTML = `<button type="button" class="ghost navb" aria-label="Previous week">‹</button><span>${weekOffset === 0 ? "This week" : fmtDate(ws) + " – " + fmtDate(addDays(ws, 6))}</span><button type="button" class="ghost navb" aria-label="Next week">›</button>`;
+    nav.children[0].onclick = () => { weekOffset--; renderStrip(); };
+    nav.children[2].onclick = () => { weekOffset++; renderStrip(); };
+    el.appendChild(nav);
+    const row = document.createElement("div"); row.className = "strip";
+    for (let i = 0; i < 7; i++){
+      const ds = addDays(ws, i), slot = slotFor(ds), s = liftSessionOn(ds);
+      const restS = sessions.find(x => x.date === ds && (x.dayId === "rest" || x.dayId === "flex" || x.dayId === "run"));
+      let state = "planned";
+      if (s) state = liftComplete(s) ? "done" : "started";
+      else if (slot.kind === "rest") state = (restS && (flexDone(restS) || runDone(restS))) ? "done" : "rest";
+      else if (slot.kind === "done") state = "done";
+      else if (slot.kind === "skip") state = "skipped";
+      else if (ds < t) state = "missed";
+      const nm = s ? ((dayById(s.dayId) || {}).name || (s.exInfo ? "Workout" : "Workout")) : slot.kind === "rest" ? "Rest day" : (dayById(slot.dayId) || {}).name || "Workout";
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "tile st-" + state + (ds === t ? " today" : "") + (ds === date ? " sel" : "") + (slot.kind === "rest" ? " restday" : "");
+      b.setAttribute("aria-label", `${WD[wdOf(ds)]} ${fmtDate(ds)}: ${nm}, ${state}${ds === t ? ", today" : ""}`);
+      b.setAttribute("aria-pressed", String(ds === date));
+      b.innerHTML = `<span class="twd">${WD[wdOf(ds)]}</span><span class="tnum">${parseYmd(ds).getDate()}</span><span class="dot"></span>`;
+      b.onclick = () => selectDate(ds);
+      row.appendChild(b);
+    }
+    el.appendChild(row);
+    const st = weekStats(ws);
+    const sum = document.createElement("button"); sum.type = "button"; sum.className = "weeksum";
+    sum.innerHTML = `<span><b>${st.lifted}/${st.planned}</b> lifts · <b>${st.flex}/3</b> flexibility · <b>${st.runs}</b> run${st.runs === 1 ? "" : "s"}${st.miles ? " · " + st.miles + " mi" : ""}</span><span class="planlink">Plan ›</span>`;
+    sum.onclick = () => showTab("plan");
+    el.appendChild(sum);
+  }
+  function renderBanners(){
+    const el = $("banners"); el.innerHTML = "";
+    if (!program || date !== today()) return;
+    // 4-week trial finished
+    if (plan.trial && (Date.parse(today()) - Date.parse(plan.trial.start)) >= 28 * 86400000){
+      const b = document.createElement("div"); b.className = "live hold";
+      b.innerHTML = `<div><b>Your 4-week trial of ${esc(plan.trial.name)} is done.</b> Keep it, or go back to ${esc((plan.saved[plan.saved.length-1] || {}).name || "your previous program")}?</div><div class="setbtns"><button type="button" class="btnp">Keep it</button><button type="button" class="ghost">Switch back</button></div>`;
+      b.querySelector(".btnp").onclick = () => { plan.trial = null; writeStore(); render(); toast("Kept"); };
+      b.querySelector(".ghost").onclick = () => { switchProgram(plan.saved.length - 1); plan.trial = null; writeStore(); };
+      el.appendChild(b);
+    }
+    // deload
+    const D = deloadInfo();
+    if (D.active){
+      const b = document.createElement("div"); b.className = "live ok";
+      b.innerHTML = `<div><b>Deload week.</b> Half the sets and about 10% lighter, stopping a few reps short of failure. It lets fatigue drop so the next block starts stronger. These sessions don't count toward progression.</div>`;
+      el.appendChild(b);
+    } else if (D.due && plan.deloadSnooze !== weekStart(today())){
+      const why = D.stalled.length >= 2 ? `${D.stalled.map(e => e.name).join(" and ")} have stalled for 3 sessions` : `you're in week ${D.weeks} of steady training`;
+      const b = document.createElement("div"); b.className = "live hold";
+      b.innerHTML = `<div><b>Deload week suggested.</b> Why: ${esc(why)}. A lighter week (half the sets, ~10% less weight) clears fatigue so you can keep progressing.</div><div class="setbtns"><button type="button" class="btnp">Start deload this week</button><button type="button" class="ghost">Next week</button></div>`;
+      b.querySelector(".btnp").onclick = () => { plan.deloadWeek = weekStart(today()); writeStore(); loadSessionFresh(); render(); };
+      b.querySelector(".ghost").onclick = () => { plan.deloadSnooze = weekStart(today()); writeStore(); render(); };
+      el.appendChild(b);
+    }
+    // missed workout (only shown the day after)
+    const missed = missedThisWeek();
+    if (missed.length){
+      const m = missed[missed.length - 1], d = dayById(m.dayId); if (!d) return;
+      const R = replan(m);
+      const rec = R.recommended;
+      const todaySlot = slotFor(today());
+      const todayLift = todaySlot.kind === "lift" ? dayById(todaySlot.dayId) : null;
+      const recToday = rec && rec.rows[0] && rec.rows[0].dayId;
+      const b = document.createElement("div"); b.className = "missed";
+      const rows = rec ? rec.rows.map(r => `<div class="mrow"><b>${WD[wdOf(r.ds)]}</b><span>${r.dayId ? esc(dayById(r.dayId).name) : "Rest / run + flexibility"}${r.dayId && r.dayId === m.dayId ? " <small>(made up)</small>" : ""}</span></div>`).join("") : "";
+      const dropTxt = rec && rec.dropped.length ? `<p class="sub">Skipping ${rec.dropped.map(x => esc(dayById(x).name)).join(", ")} this week: fitting everything would put the same muscles on back-to-back days.</p>` : rec && rec.conflicts ? `<p class="sub">Heads up: this still puts one muscle group on back-to-back days.</p>` : "";
+      const verb = recToday === m.dayId ? (todayLift && todayLift.id !== m.dayId ? `Do ${esc(d.name)} today instead of ${esc(todayLift.name)}` : `Do ${esc(d.name)} today`) : "Use this plan";
+      b.innerHTML = `<span class="mtag">Missed ${WD[wdOf(m.ds)]}</span><b>${esc(d.name)} wasn't logged.</b><p class="sub">Best way to fit the rest of your week:</p>${rows}${dropTxt}
+        <button type="button" class="btnp">${verb}</button>
+        <div class="setbtns">${R.keepAll && rec && rec.dropped.length ? '<button type="button" class="ghost" data-k="all">Keep all anyway</button>' : ""}<button type="button" class="ghost" data-k="skip">Skip it this week</button><button type="button" class="ghost" data-k="done">I did it, forgot to log</button></div>`;
+      b.querySelector(".btnp").onclick = () => { if (rec) applyReplan(rec, m.ds); };
+      b.querySelectorAll("[data-k]").forEach(x => x.onclick = () => {
+        if (x.dataset.k === "all") applyReplan(R.keepAll, m.ds);
+        else { plan.overrides[m.ds] = x.dataset.k === "skip" ? "skip" : "done"; writeStore(); render(); }
+      });
+      el.appendChild(b);
+    }
+  }
+  function loadSessionFresh(){ // re-suggest untouched sets (used when a deload starts)
+    const d = day(); if (!d || !cur) return;
+    effective(d).forEach(({ ex }) => { const a = cur.sets[ex.id]; if (a && !a.some(x => x.done)) cur.sets[ex.id] = freshSets(ex); });
+  }
+
+  /* ---------- rest day (run + flexibility) ---------- */
+  function renderRest(el){
+    const ws = weekStart(date), st = weekStats(ws);
+    const head = document.createElement("p"); head.className = "sub";
+    head.textContent = "No lifting today. Recover, move a little, stretch.";
+    el.appendChild(head);
+    const fx = document.createElement("div"); fx.className = "panel";
+    const n = flexCount(cur);
+    fx.innerHTML = `<div class="hh2"><b>Flexibility</b><span class="sub">${st.flex} of 3 this week</span></div><div class="progress"><span style="width:${Math.min(100, st.flex/3*100)}%"></span></div>`;
+    el.appendChild(fx);
+    renderFlex(el, true);
+    const runWrap = document.createElement("div");
+    el.appendChild(runWrap);
+    if (runDone(cur) || cur.showRun){ renderRun(runWrap); }
+    else {
+      const c = document.createElement("div"); c.className = "card dashed";
+      c.innerHTML = `<div class="hh2"><b>Run <span class="sub">optional</span></b><span class="sub">${st.runs} this week${st.miles ? " · " + st.miles + " mi" : ""}</span></div><p class="sub">Easy pace, 20–30 min. Warm up with a brisk walk first.</p><button type="button" class="ghost">+ Log a run</button>`;
+      c.querySelector("button").onclick = () => { cur.showRun = true; render(); };
+      runWrap.appendChild(c);
+    }
+  }
+
+  /* ---------- Plan view ---------- */
+  function switchProgram(i){
+    const target = plan.saved[i]; if (!target) return;
+    plan.saved.splice(i, 1);
+    plan.saved.push({ name: program.name || "Previous program", program: clone(program), savedAt: today() });
+    program = clone(target.program);
+    plan.assign = {}; rearrange();
+    Object.keys(plan.overrides).forEach(k => { if (k >= today()) delete plan.overrides[k]; });
+    dayId = null; writeStore(); selectDate(today()); toast(`Switched to ${target.name}`);
+  }
+  function renderPlan(){
+    const el = $("view-plan"); el.innerHTML = "";
+    const top = document.createElement("div"); top.className = "planhead";
+    top.innerHTML = `<button type="button" class="ghost navb" aria-label="Back to Train">‹</button><h2>Your week</h2>`;
+    top.querySelector("button").onclick = () => showTab("train");
+    el.appendChild(top);
+
+    // rest days
+    const rd = document.createElement("div"); rd.className = "panel";
+    rd.innerHTML = `<div class="hh2"><b>Rest days</b><span class="sub">tap to change</span></div><div class="strip restpick"></div><p class="sub"></p>`;
+    const rp = rd.querySelector(".restpick");
+    WEEK_ORDER.forEach(w => {
+      const b = document.createElement("button"); b.type = "button";
+      const on = plan.rest.includes(w);
+      b.className = "chip" + (on ? " restchip" : ""); b.textContent = WD[w]; b.setAttribute("aria-pressed", String(on));
+      b.onclick = () => {
+        if (on) plan.rest = plan.rest.filter(x => x !== w); else plan.rest.push(w);
+        const open = 7 - plan.rest.length;
+        if (open < program.days.length) toast(`${open} open days for ${program.days.length} workouts: ${program.days.length - open} won't fit each week`);
+        rearrange(); writeStore(); renderPlan(); renderStrip();
+      };
+      rp.appendChild(b);
+    });
+    const open = 7 - plan.rest.length;
+    rd.querySelector("p").textContent = `${open} open days for ${program.days.length} workouts.` + (open > program.days.length ? ` ${open - program.days.length === 1 ? "The spare day becomes" : "Spare days become"} run + flexibility.` : "");
+    el.appendChild(rd);
+
+    // assignments
+    const as = document.createElement("div"); as.className = "panel";
+    as.innerHTML = `<div class="hh2"><b>${esc(program.name || "Your program")}</b><span class="sub">tap a day to change it</span></div>`;
+    WEEK_ORDER.forEach(w => {
+      const id = plan.rest.includes(w) ? null : plan.assign[w];
+      const d = id ? dayById(id) : null;
+      const mins = d ? dayMinutes(d.exercises) : 0;
+      const row = document.createElement("button"); row.type = "button"; row.className = "prow" + (planOpen === w ? " open" : "");
+      const label = plan.rest.includes(w) ? "Rest" : d ? d.name : "Run + flexibility";
+      const sub = d ? [...dayHits(d)].join(" · ") : plan.rest.includes(w) ? "flexibility if you want it" : "spare day";
+      row.innerHTML = `<b class="pwd">${WD[w]}</b><span><span class="pnm">${esc(label)}</span><small>${esc(sub)}</small></span><span class="pmin${mins > CAP_MIN ? " over" : ""}">${d ? "~" + mins + " min" : ""}</span>`;
+      if (!plan.rest.includes(w)) row.onclick = () => { planOpen = planOpen === w ? null : w; renderPlan(); };
+      as.appendChild(row);
+      if (planOpen === w){
+        const opts = document.createElement("div"); opts.className = "popts";
+        const choices = program.days.map(x => x.id).concat([null]);
+        choices.forEach(cid => {
+          const trial = Object.assign({}, plan.assign);
+          const prevW = Object.keys(trial).find(k => trial[k] === cid);
+          if (cid && prevW != null) trial[prevW] = plan.assign[w] || undefined; // swap
+          if (cid) trial[w] = cid; else delete trial[w];
+          Object.keys(trial).forEach(k => { if (!trial[k] || plan.rest.includes(+k)) delete trial[k]; });
+          const r = recoveryReport(trial);
+          const bad = r.lines.find(l => !l.ok && !l.soft);
+          const ob = document.createElement("button"); ob.type = "button"; ob.className = "popt" + (bad ? " warn" : "");
+          ob.innerHTML = `<span>${esc(cid ? dayById(cid).name : "Run + flexibility")}${prevW != null && cid && +prevW !== w ? ` <small>(swaps with ${WD[prevW]})</small>` : ""}</span><small>${bad ? "! " + esc(bad.text) : "✓ fits"}</small>`;
+          ob.onclick = () => { plan.assign = trial; planOpen = null; touchPlan(); writeStore(); renderPlan(); renderStrip(); };
+          opts.appendChild(ob);
+        });
+        as.appendChild(opts);
+      }
+    });
+    const ar = document.createElement("button"); ar.type = "button"; ar.className = "ghost"; ar.textContent = "Auto-arrange for recovery";
+    ar.onclick = () => { plan.assign = {}; rearrange(); writeStore(); renderPlan(); renderStrip(); toast("Arranged for recovery"); };
+    as.appendChild(ar);
+    el.appendChild(as);
+
+    // recovery check
+    const rc = document.createElement("div"); rc.className = "panel";
+    const rep = recoveryReport(Object.fromEntries(Object.entries(plan.assign).filter(([w]) => !plan.rest.includes(+w))));
+    const spare = WEEK_ORDER.filter(w => !plan.rest.includes(w) && !plan.assign[w]).length;
+    const flexDays = plan.rest.length + spare;
+    const flexLine = flexDays >= 3 ? { ok:true, text:`Flexibility 3×/week fits on your ${flexDays} rest and spare days` }
+      : { ok:true, text:`Flexibility 3×/week: ${flexDays} rest/spare day${flexDays === 1 ? "" : "s"} + ${3 - flexDays} after lifting (use the full routine as your cool-down)` };
+    rc.innerHTML = `<div class="hh2"><b>Recovery check</b><span class="sub">48 h+ between hard sessions, helper muscles included</span></div>` +
+      rep.lines.concat([flexLine]).map(l => `<div class="rline"><span class="${l.ok ? "okc" : "warnc"}">${l.ok ? "✓" : "!"}</span><span>${esc(l.text)}</span></div>`).join("");
+    el.appendChild(rc);
+
+    // deload timing
+    const D = deloadInfo();
+    const dl = document.createElement("div"); dl.className = "panel";
+    dl.innerHTML = `<div class="hh2"><b>Deload timing</b><span class="sub">${D.active ? "this week" : "week " + D.weeks + " of this block"}</span></div><p class="sub">${D.active ? "Deload week in progress: half the sets, ~10% lighter." : D.due ? "A deload is due now." : `Next deload around ${fmtDate(D.nextDate)} (every 6–8 weeks, sooner if 2+ main lifts stall).`}</p>`;
+    if (!D.active){ const b = document.createElement("button"); b.type = "button"; b.className = "ghost"; b.textContent = "Start a deload week now"; b.onclick = () => { plan.deloadWeek = weekStart(today()); writeStore(); renderPlan(); }; dl.appendChild(b); }
+    else { const b = document.createElement("button"); b.type = "button"; b.className = "ghost"; b.textContent = "End deload week"; b.onclick = () => { plan.deloadWeek = null; plan.lastDeloadEnd = today(); writeStore(); renderPlan(); }; dl.appendChild(b); }
+    el.appendChild(dl);
+
+    // programs
+    const pg = document.createElement("div"); pg.className = "panel";
+    pg.innerHTML = `<div class="hh2"><b>Programs</b>${plan.trial ? `<span class="sub">trial: week ${Math.min(4, Math.floor((Date.parse(today()) - Date.parse(plan.trial.start)) / (7*86400000)) + 1)} of 4</span>` : ""}</div>`;
+    const bb = document.createElement("button"); bb.type = "button"; bb.className = "btnp"; bb.textContent = "Build a routine from the science";
+    bb.onclick = () => { draft = null; showTab("build"); };
+    pg.appendChild(bb);
+    plan.saved.forEach((sp, i) => {
+      const b = document.createElement("button"); b.type = "button"; b.className = "ghost";
+      b.textContent = `Switch to ${sp.name}`;
+      b.onclick = () => switchProgram(i);
+      pg.appendChild(b);
+    });
+    el.appendChild(pg);
+  }
+
+  /* ---------- Routine builder ---------- */
+  const T = (name, sets, reps, extra) => Object.assign({ name, sets, reps }, extra || {});
+  const TEMPLATES = {
+    upperA: { name:"Upper A", ex:[T("Barbell Bench Press",3,5), T("Chin-ups",3,6), T("Barbell Row",3,8), T("Seated Machine Shoulder Press",3,10), T("EZ Bar Curl",3,10,{ss:true}), T("Rope Tricep Pushdown",3,12)] },
+    lowerA: { name:"Lower A", ex:[T("Leg Press",3,8), T("Romanian Deadlift",3,8), T("Seated Leg Curl",3,12), T("Leg Extension",2,15), T("Standing Calf Raise Machine",5,12)] },
+    upperB: { name:"Upper B", ex:[T("Incline Dumbbell Bench Press",4,10), T("Lat Pulldown",3,10), T("Seated Cable Row",3,10), T("Cable Chest Fly",3,15), T("Cable Lateral Raise",4,15), T("Bayesian Cable Curl",3,12,{ss:true}), T("Seated Cable Overhead Tricep Extension",3,12)] },
+    lowerB: { name:"Lower B", ex:[T("Hack Squat",3,10), T("Barbell Hip Thrust",3,10), T("Seated Leg Curl",3,12), T("Walking Lunge",2,12), T("Seated Calf Raise",5,15), T("Reverse Pec Deck",3,15)] },
+    fbA: { name:"Full body A", ex:[T("Barbell Bench Press",3,5), T("Leg Press",3,8), T("Lat Pulldown",3,10), T("Romanian Deadlift",3,8), T("Dumbbell Lateral Raise",3,15), T("EZ Bar Curl",2,12,{ss:true}), T("Rope Tricep Pushdown",2,12)] },
+    fbB: { name:"Full body B", ex:[T("Incline Dumbbell Bench Press",3,10), T("Hack Squat",3,10), T("Chin-ups",3,6), T("Seated Leg Curl",3,12), T("Seated Calf Raise",4,15), T("Cable Lateral Raise",3,15)] },
+    fbC: { name:"Full body C", ex:[T("Machine Chest Press",3,10), T("Bulgarian Split Squat",3,10), T("Seated Cable Row",3,10), T("Barbell Hip Thrust",3,10), T("Reverse Pec Deck",3,15), T("Hammer Curl",2,12,{ss:true}), T("Seated Cable Overhead Tricep Extension",2,12)] },
+    push: { name:"Push", ex:[T("Incline Dumbbell Bench Press",4,10), T("Seated Machine Shoulder Press",3,10), T("Cable Chest Fly",3,15), T("Cable Lateral Raise",4,15), T("Seated Cable Overhead Tricep Extension",3,12)] },
+    pull: { name:"Pull", ex:[T("Chin-ups",3,6), T("Seated Cable Row",3,10), T("Single-Arm Lat Pulldown",3,12), T("Reverse Pec Deck",3,15), T("Bayesian Cable Curl",3,12), T("Hammer Curl",2,12)] },
+    legs: { name:"Legs", ex:[T("Hack Squat",3,10), T("Barbell Hip Thrust",3,10), T("Seated Leg Curl",3,12), T("Leg Extension",3,15), T("Seated Calf Raise",5,15)] },
+    pushA: { name:"Push A", ex:[T("Barbell Bench Press",3,5), T("Incline Dumbbell Bench Press",3,10), T("Seated Machine Shoulder Press",3,10), T("Cable Lateral Raise",3,15), T("Rope Tricep Pushdown",3,12)] },
+    pullA: { name:"Pull A", ex:[T("Chin-ups",3,6), T("Barbell Row",3,8), T("Reverse Pec Deck",3,15), T("EZ Bar Curl",3,10), T("Hammer Curl",2,12)] },
+    legsFull: { name:"Legs", ex:[T("Hack Squat",3,8), T("Romanian Deadlift",3,8), T("Leg Press",3,12), T("Seated Leg Curl",3,12), T("Leg Extension",3,15), T("Standing Calf Raise Machine",3,12,{ss:true}), T("Seated Calf Raise",3,15)] },
+    armsShoulders: { name:"Chest, Shoulders & Arms", ex:[T("Cable Chest Fly",3,12), T("Cable Lateral Raise",3,15), T("EZ Bar Curl",3,10,{ss:true}), T("Rope Tricep Pushdown",3,12), T("Incline Dumbbell Curl",2,12,{ss:true}), T("Seated Cable Overhead Tricep Extension",2,12)] },
+    legsA: { name:"Legs A", ex:[T("Leg Press",3,8), T("Romanian Deadlift",3,8), T("Leg Extension",3,15), T("Seated Leg Curl",3,12), T("Standing Calf Raise Machine",4,12)] }
+  };
+  const SPLITS1 = { 2:["Upper + Legs", ["upperA","legsFull"]], 3:["Upper / Legs / Upper", ["upperA","legsFull","upperB"]], 4:["Upper / Legs / Upper / Chest, Shoulders & Arms", ["upperA","legsFull","upperB","armsShoulders"]], 5:["Upper / Pull / Legs / Push / Chest, Shoulders & Arms", ["upperA","pull","legsFull","push","armsShoulders"]], 6:["Push / Pull / Legs / Push / Pull / Chest, Shoulders & Arms", ["pushA","pullA","legsFull","push","pull","armsShoulders"]] };
+  const FOCUS = {
+    Chest:     { muscle:"Chest", ex:[T("Cable Chest Fly",3,15), T("Machine Chest Press",3,10)] },
+    Back:      { muscle:"Back", ex:[T("Chest-Supported Machine Row",3,10), T("Straight-Arm Pulldown",3,12)] },
+    Shoulders: { muscle:"Shoulders", ex:[T("Machine Lateral Raise",3,15), T("Cable Rear Delt Fly",3,15)] },
+    Arms:      { muscle:"Biceps", also:"Triceps", ex:[T("Bayesian Cable Curl",3,12,{ss:true}), T("Single-Arm Cable Pushdown",3,12)] },
+    Legs:      { muscle:"Quads", also:"Hamstrings & Glutes", ex:[T("Hack Squat",3,10), T("Seated Leg Curl",3,12)] },
+    Glutes:    { muscle:"Hamstrings & Glutes", ex:[T("Barbell Hip Thrust",3,10), T("Hip Abduction Machine",3,15)] }
+  };
+  const SPLITS = { 2:["Full body × 2", ["fbA","fbB"]], 3:["Full body × 3", ["fbA","fbB","fbC"]], 4:["Upper / Lower × 2", ["upperA","lowerA","upperB","lowerB"]], 5:["Upper / Lower + Push / Pull / Legs", ["upperA","lowerA","push","pull","legs"]], 6:["Push / Pull / Legs × 2", ["pushA","pullA","legsA","push","pull","legs"]] };
+  function exFromTemplate(t){
+    const b = BANK_BY[norm(t.name)] || {};
+    const known = allExercises().find(e => norm(e.name) === norm(t.name));
+    return { id: known ? known.id : idForName(t.name), name: b.name || t.name, reps: Array(t.sets).fill(t.reps), rest: b.rest ?? 90, inc: b.inc ?? 5, main: !!b.main, bw: !!b.bw, purpose: b.purpose || "", ss: !!t.ss, group: "" };
+  }
+  function makeDraft(n, cap, o){
+    o = Object.assign({ legs:2, goal:"size", focus:"None" }, o || {});
+    const [label0, keys] = (o.legs === 1 ? SPLITS1 : SPLITS)[n];
+    const days = keys.map(k => ({ id: "b" + n + "-" + k, name: TEMPLATES[k].name, exercises: TEMPLATES[k].ex.map(exFromTemplate) }));
+    // goal: strength = heavy main lifts, fewer isolation sets; both = first lift of each day heavy
+    const heavy = e => { const m = BANK_BY[norm(e.name)] || {}; return m.main || m.warm === "bar"; };
+    days.forEach(d => { let nHeavy = 0; d.exercises.forEach((e, i) => {
+      const m = BANK_BY[norm(e.name)] || {};
+      if (o.goal === "strength"){
+        if (heavy(e) && nHeavy++ < 2){ e.reps = Array(4).fill(5); e.rest = m.main ? 210 : 180; }
+        else if (m.warm){ e.reps = Array(3).fill(6); e.rest = 120; }
+        else e.reps = Array(Math.min(m.muscle === "Calves" ? 3 : 2, e.reps.length)).fill(Math.min(12, e.reps[0]));
+      } else if (o.goal === "both" && i === 0 && (heavy(e) || m.warm)){ e.reps = Array(4).fill(5); e.rest = 210; }
+      else if (e.reps[0] < 6){ e.reps = e.reps.map(() => 8); }
+    }); });
+    // effort guidance: growth depends on how close sets get to failure
+    days.forEach(d => d.exercises.forEach(e => {
+      const m = BANK_BY[norm(e.name)] || {};
+      e.note = e.note || ((m.warm || m.bw) ? (e.reps[0] <= 6 ? "Stop 1–2 reps before failure; keep form tight." : "End sets 1–2 reps before failure.") : "Go to 0–1 reps left; last set to failure is fine.");
+    }));
+    // focus: one extra exercise on two days that train that muscle, early in the session
+    if (o.focus !== "None" && FOCUS[o.focus]){
+      const F = FOCUS[o.focus];
+      const trains = d => d.exercises.some(e => [F.muscle, F.also].includes((meta(e) || {}).muscle));
+      const targets = days.filter(trains).slice(0, 2);
+      targets.forEach((d, i) => {
+        const add = F.ex.length > 1 && o.focus === "Arms" ? F.ex.map(exFromTemplate) : [exFromTemplate(F.ex[i % F.ex.length])];
+        const have = new Set(d.exercises.map(e => norm(e.name)));
+        const fresh = add.filter(e => !have.has(norm(e.name)));
+        if (!fresh.length) return;
+        // after the day's first (main) lift, so the focus muscle is trained while you're fresh
+        d.exercises.splice(1, 0, ...fresh);
+      });
+      // cap the focus muscle near 20 sets/week: trim other isolation work for it first, then the added sets
+      const week = () => muscleSets([].concat(...days.map(d => d.exercises)));
+      const added = new Set([].concat(...F.ex.map(x => norm(x.name))));
+      [F.muscle, F.also].filter(Boolean).forEach(mu => {
+        const pool = [].concat(...days.map(d => d.exercises)).filter(e => (meta(e) || {}).muscle === mu && !(BANK_BY[norm(e.name)] || {}).warm);
+        const order = pool.filter(e => !added.has(norm(e.name))).concat(pool.filter(e => added.has(norm(e.name))));
+        let guard = 40;
+        while ((week()[mu] || 0) > 20 && guard--){
+          const e = order.find(x => x.reps.length > 2); if (!e) break;
+          e.reps.pop();
+        }
+      });
+    }
+    // weekly cap: past ~20 sets a muscle gives little per minute, so trim isolation sets (largest first, min 2 each)
+    const all = () => [].concat(...days.map(d => d.exercises));
+    const isIso = e => { const m = BANK_BY[norm(e.name)] || {}; return !m.warm && !m.bw; };
+    Object.keys(muscleSets(all())).forEach(mu => {
+      let guard = 60;
+      while ((muscleSets(all())[mu] || 0) > 20.5 && guard--){
+        const pool = all().filter(e => (meta(e) || {}).muscle === mu && isIso(e) && e.reps.length > 2).sort((a, b) => b.reps.length - a.reps.length);
+        if (!pool.length){
+          // every isolation move is at 2 sets: drop one that isn't the focus pick, if the muscle keeps another exercise
+          const keep = new Set(o.focus !== "None" && FOCUS[o.focus] ? FOCUS[o.focus].ex.map(x => norm(x.name)) : []);
+          const isos = all().filter(e => (meta(e) || {}).muscle === mu && isIso(e) && !keep.has(norm(e.name)));
+          const others = all().filter(e => (meta(e) || {}).muscle === mu).length;
+          if (!isos.length || others < 3) break;
+          const victim = isos[isos.length - 1];
+          days.forEach(d => { const i = d.exercises.indexOf(victim); if (i >= 0){ if (i > 0 && d.exercises[i-1].ss && !victim.ss) d.exercises[i-1].ss = false; d.exercises.splice(i, 1); } });
+          continue;
+        }
+        pool[0].reps.pop();
+      }
+    });
+    // time ceiling: keep every day at or under 75 min. Cheapest fixes first: shorter isolation rest, then a set off
+    // the isolation move whose muscle has the most weekly volume (never below 10 sets for that muscle)
+    days.forEach(d => {
+      let guard = 30;
+      while (dayMinutes(d.exercises) > 75 && guard--){
+        const iso = d.exercises.filter(e => isIso(e) && e.rest > 60);
+        if (iso.length){ iso.forEach(e => e.rest = 60); continue; }
+        const wk = muscleSets(all());
+        const c = d.exercises.filter(e => e.reps.length > 2).map(e => ({ e, v: wk[(meta(e) || {}).muscle] || 0, iso: isIso(e) }))
+          .filter(x => x.v - 1 >= 10).sort((x, y) => (y.iso - x.iso) || (y.v - x.v))[0];
+        if (!c) break;
+        c.e.reps.pop();
+      }
+    });
+    const goalTxt = { size:"", strength:" · strength", both:" · strength + size" }[o.goal];
+    return { label: label0 + goalTxt + (o.focus !== "None" ? " · " + o.focus.toLowerCase() + " focus" : ""), cap, opts:o, days };
+  }
+  function trimOptions(dd, cap){
+    const out = [], mins = dayMinutes(dd.exercises);
+    if (mins <= cap) return out;
+    const L = dd.exercises;
+    // pair a biceps and a triceps isolation move that aren't already in a superset
+    const free = (e, i) => !e.ss && !(i > 0 && L[i-1].ss);
+    const bi = L.findIndex((e, i) => (meta(e) || {}).muscle === "Biceps" && free(e, i));
+    const tri = L.findIndex((e, i) => (meta(e) || {}).muscle === "Triceps" && free(e, i));
+    if (bi >= 0 && tri >= 0){
+      const biEx = L[bi], triEx = L[tri];
+      const saved = Math.round(exMinutes(biEx, false) - exMinutes(biEx, true));
+      out.push({ label:`Superset ${biEx.name} with ${triEx.name} (−${saved} min, no sets lost)`, apply: () => { L.splice(L.indexOf(biEx), 1); L.splice(L.indexOf(triEx), 0, biEx); biEx.ss = true; } });
+    }
+    const iso = L.filter((e, i) => !((meta(e) || {}).warm) && !e.main && e.rest > 60 && !(e.ss && i < L.length - 1));
+    if (iso.length){
+      const saved = Math.round(iso.reduce((a,e) => a + e.reps.length * (e.rest - 60) / 60, 0));
+      if (saved >= 1) out.push({ label:`Rest 60 s on isolation moves (−${saved} min)`, apply: () => iso.forEach(e => e.rest = 60) });
+    }
+    // last resort: one set off the exercise whose muscle has the most weekly volume to spare
+    const week = muscleSets(draft.days.flatMap(d => d.exercises));
+    const cand = L.filter(e => e.reps.length > 2).map(e => ({ e, m: (meta(e) || {}).muscle, v: week[(meta(e) || {}).muscle] || 0 })).filter(c => c.v - 1 >= 10).sort((a,b) => b.v - a.v)[0];
+    if (cand) out.push({ label:`Last resort: 1 set less of ${cand.e.name} (${cand.m} stays at ${Math.round(cand.v - 1)} sets)`, apply: () => { cand.e.reps = cand.e.reps.slice(0, -1); } });
+    return out;
+  }
+  function renderBuild(){
+    const el = $("view-build"); el.innerHTML = "";
+    const open = 7 - plan.rest.length;
+    const n = Math.max(2, Math.min(6, (draft && draft.n) || Math.min(open, program.days.length || 4, 6)));
+    const keepOpts = draft && draft.opts ? draft.opts : { legs: plan.legDays || 2, goal:"size", focus:"None" };
+    if (!draft || draft.n !== n) { draft = Object.assign(makeDraft(n, (draft && draft.cap) || CAP_MIN, keepOpts), { n }); }
+    const remake = o => { draft = Object.assign(makeDraft(n, draft.cap, Object.assign({}, draft.opts, o)), { n }); renderBuild(); };
+    const top = document.createElement("div"); top.className = "planhead";
+    top.innerHTML = `<button type="button" class="ghost navb" aria-label="Back to Your week">‹</button><h2>Build a routine</h2>`;
+    top.querySelector("button").onclick = () => showTab("plan");
+    el.appendChild(top);
+    const opts = document.createElement("div"); opts.className = "panel";
+    opts.innerHTML = `<div class="hh2"><b>Lifting days per week</b><span class="sub">${open} open in your week</span></div><div class="chips dchips"></div><div class="hh2"><b>Time per session</b><span class="sub">aim 60–75 min</span></div><div class="chips tchips"></div>
+      <div class="hh2"><b>Training emphasis</b><span class="sub" id="goalHint"></span></div><div class="chips gchips"></div>
+      <div class="hh2"><b>Focus muscle</b><span class="sub">extra work, early in the session</span></div><div class="chips fchips"></div>
+      <div class="hh2"><b>Leg days per week</b><span class="sub" id="legHint"></span></div><div class="chips lchips"></div>`;
+    [2,3,4,5,6].forEach(k => { const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = k; b.setAttribute("aria-pressed", String(k === n)); b.onclick = () => { draft = Object.assign(makeDraft(k, draft.cap, draft.opts), { n:k }); renderBuild(); }; opts.querySelector(".dchips").appendChild(b); });
+    if (n > open){
+      // not enough open days: let them free up rest days right here
+      const need = document.createElement("div"); need.className = "live hold";
+      need.innerHTML = `<div><b>${n} lifting days needs ${n - open} more open day${n - open > 1 ? "s" : ""}.</b> Your rest days are ${plan.rest.slice().sort((a,b) => WEEK_ORDER.indexOf(a) - WEEK_ORDER.indexOf(b)).map(w => WD[w]).join(", ")}. Tap the ones you'd lift on instead:</div><div class="strip restpick"></div>`;
+      const rp = need.querySelector(".restpick");
+      WEEK_ORDER.forEach(w => {
+        const on = plan.rest.includes(w);
+        const b = document.createElement("button"); b.type = "button";
+        b.className = "chip" + (on ? " restchip" : ""); b.textContent = WD[w]; b.setAttribute("aria-pressed", String(on));
+        b.onclick = () => { if (on) plan.rest = plan.rest.filter(x => x !== w); else plan.rest.push(w); rearrange(); writeStore(); renderBuild(); };
+        rp.appendChild(b);
+      });
+      opts.appendChild(need);
+    }
+    [60,75].forEach(c => { const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = c + " min"; b.setAttribute("aria-pressed", String(c === draft.cap)); b.onclick = () => { draft.cap = c; renderBuild(); }; opts.querySelector(".tchips").appendChild(b); });
+    const chipRow = (sel, items, cur, on) => items.forEach(([v, label]) => { const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = label; b.setAttribute("aria-pressed", String(v === cur)); b.onclick = () => on(v); opts.querySelector(sel).appendChild(b); });
+    chipRow(".gchips", [["size","Size"],["strength","Strength"],["both","Both"]], draft.opts.goal, v => remake({ goal:v }));
+    chipRow(".fchips", ["None","Chest","Back","Shoulders","Arms","Legs","Glutes"].map(x => [x, x]), draft.opts.focus, v => remake({ focus:v }));
+    chipRow(".lchips", [[1,"1"],[2,"2"]], draft.opts.legs, v => remake({ legs:v }));
+    opts.querySelector("#goalHint").textContent = { size:"8–15 reps, most growth per set", strength:"heavy 4×5 main lifts, longer rest, fewer extras", both:"first lift of each day heavy, rest for size" }[draft.opts.goal];
+    opts.querySelector("#legHint").textContent = draft.opts.legs === 1 ? "legs keep ~8–10 sets/week: maintain + slow growth" : "legs twice a week: faster leg growth";
+    el.appendChild(opts);
+
+    const sp = document.createElement("div"); sp.className = "panel";
+    sp.innerHTML = `<div class="hh2"><b class="disp">${esc(draft.label)}</b><span class="sub okc">best fit for ${n} days</span></div>`;
+    draft.days.forEach((dd, di) => {
+      const mins = dayMinutes(dd.exercises), over = mins > draft.cap;
+      const box = document.createElement("details"); box.className = "bday";
+      box.innerHTML = `<summary><span><b>${esc(dd.name)}</b><small>${dd.exercises.map(e => esc(e.name)).slice(0,4).join(" · ")}${dd.exercises.length > 4 ? " …" : ""}</small></span><span class="pmin${over ? " over" : ""}">~${mins} min${over ? " !" : ""}</span></summary><div class="bex"></div>`;
+      const bx = box.querySelector(".bex");
+      dd.exercises.forEach((e, i) => {
+        const r = document.createElement("div"); r.className = "brow";
+        r.innerHTML = `<span><b>${esc(e.name)}</b><small>${e.reps.length}×${e.reps[0]}${e.ss ? " · superset with next" : ""} · ~${Math.round(exMinutes(e, e.ss && i < dd.exercises.length - 1))} min${e.purpose ? " · " + esc(e.purpose) : ""}</small></span>`;
+        bx.appendChild(r);
+      });
+      trimOptions(dd, draft.cap).forEach(o => { const b = document.createElement("button"); b.type = "button"; b.className = "ghost"; b.textContent = o.label; b.onclick = () => { o.apply(); renderBuild(); }; bx.appendChild(b); });
+      if (over) box.open = true;
+      sp.appendChild(box);
+    });
+    el.appendChild(sp);
+
+    // weekly sets per muscle vs current program
+    const all = draft.days.flatMap(d => d.exercises), now = program.days.flatMap(d => d.exercises);
+    const v = document.createElement("div"); v.className = "panel";
+    v.innerHTML = `<div class="hh2"><b>Hard sets per muscle, per week</b><span class="sub">band = 10–20 · (was) = current program</span></div>` + volBars(muscleSets(all), muscleSets(now));
+    el.appendChild(v);
+
+    const go = document.createElement("div"); go.className = "panel";
+    go.innerHTML = `<p class="sub">Built on research: 10–20 hard sets per muscle per week (helper muscles count half) · 6–20 reps, sets close to failure · each muscle at least twice a week${draft.opts.legs === 1 ? " (legs once, as you chose)" : ""} · no more than ~10 sets for one muscle in one session · stretched-position picks (seated leg curl, overhead extension, incline curl) · compound lifts first, 2–3 min rest on them. Rules of thumb (not directly tested): 48 h before a muscle is trained again, add weight once all reps are hit. Exercises you already do keep their history and weight suggestions. Swap any exercise after you start, with Edit on its card.</p><button type="button" class="btnp">Try it for 4 weeks</button><p class="sub">Your current program is saved. Switch back anytime from Your week.</p>`;
+    go.querySelector("button").onclick = () => {
+      if (n > 7 - plan.rest.length){ toast(`Free up ${n - (7 - plan.rest.length)} more rest day first`); return; }
+      plan.saved.push({ name: program.name || "Previous program", program: clone(program), savedAt: today() });
+      program = { name: draft.label, days: draft.days.map(d => ({ id: d.id, name: d.name, exercises: clone(d.exercises) })) };
+      plan.trial = { start: today(), name: draft.label };
+      plan.legDays = draft.opts ? draft.opts.legs : 2;
+      plan.assign = {}; rearrange();
+      plan.goals = plan.goals.filter(g => program.days.some(d => d.exercises.some(e => e.id === g.exId)) || true);
+      // future overrides pointed at the old program's days
+      Object.keys(plan.overrides).forEach(k => { if (k >= today()) delete plan.overrides[k]; });
+      writeStore(); draft = null; showTab("train"); selectDate(today()); toast(`Started ${program.name}`);
+    };
+    el.appendChild(go);
+  }
+  const MUSCLE_ORDER = ["Chest","Back","Shoulders","Biceps","Triceps","Quads","Hamstrings & Glutes","Calves"];
+  function volBars(ms, was){
+    return MUSCLE_ORDER.map(m => {
+      const n = Math.round(ms[m] || 0), w = was ? Math.round(was[m] || 0) : null;
+      const pct = Math.min(100, n / 24 * 100), col = n < 10 || n > 20 ? "var(--warn)" : "var(--good)";
+      return `<div class="vrow"><span>${m === "Hamstrings & Glutes" ? "Hams & glutes" : m}</span><span class="vtrack"><span class="vband"></span><span class="vbar" style="width:${pct}%;background:${col}"></span></span><span class="vnum">${n}${w != null && w !== n ? ` (was ${w})` : ""}</span></div>`;
+    }).join("");
+  }
+
+  /* ---------- History panels: weekly sets, goals ---------- */
+  function setsLast7(){
+    const from = addDays(today(), -6), out = {};
+    sessions.filter(s => s.date >= from && s.sets).forEach(s => {
+      Object.keys(s.sets).forEach(id => {
+        const ex = allExercises().find(e => e.id === id) || { name: (s.exInfo && s.exInfo[id] && s.exInfo[id].name) || id, reps: [] };
+        const n = (s.sets[id] || []).filter(x => x && x.done && !x.drop).length; if (!n) return;
+        const m = (meta(ex) || {}).muscle; if (m) out[m] = (out[m] || 0) + n;
+        helpersOf(ex).forEach(h => out[h] = (out[h] || 0) + n * 0.5);
+      });
+    });
+    return out;
+  }
+  function renderVolume(){
+    const el = $("volPanel"); if (!el) return;
+    const ms = setsLast7();
+    el.innerHTML = `<h3>Sets per muscle</h3><p class="sub">Last 7 days. For growth, aim for 10–20 hard sets per muscle a week. Helper work counts half (bench → triceps).</p>` + volBars(ms, null);
+  }
+  function renderGoals(){
+    const el = $("goalPanel"); if (!el) return;
+    const exs = []; program.days.forEach(d => d.exercises.forEach(e => { if (!exs.some(x => x.id === e.id)) exs.push(e); }));
+    let html = `<h3>Goals</h3>`;
+    if (!plan.goals.length && !goalForm) html += `<p class="sub">Set a target like bench 185 × 5. The app tracks how close you are and, once there's a trend, when you'll likely get there.</p>`;
+    plan.goals.forEach((g, i) => {
+      const p = goalProgress(g);
+      const eta = p.hit ? "Reached!" : p.eta === "flat" ? "No upward trend yet" : p.eta ? `On pace for about ${fmtDate(p.eta)}` : "Needs 3+ sessions in the last 8 weeks to project";
+      html += `<div class="goal"><div class="hh2"><b>${esc(g.name)} ${g.w} × ${g.r}</b><button type="button" class="linkbtn" data-goal-del="${i}" aria-label="Delete goal">Remove</button></div><div class="gbar big"><span style="width:${p.hit ? 100 : p.pct}%"></span></div><p class="sub">${p.hit ? "" : `Estimated max ${p.curV} of ${p.target} needed (${p.pct}%). `}${eta}</p></div>`;
+    });
+    if (goalForm){
+      html += `<div class="goalform"><label class="fld2" for="gEx">Exercise<select id="gEx">${exs.map(e => `<option value="${esc(e.id)}">${esc(e.name)}</option>`).join("")}</select></label><div class="row2"><label class="fld2" for="gW">Weight (lb)<input id="gW" inputmode="decimal" placeholder="185"></label><label class="fld2" for="gR">Reps<input id="gR" inputmode="numeric" placeholder="5"></label></div><div class="setbtns"><button type="button" class="btnp" id="gSave">Add goal</button><button type="button" class="ghost" id="gCancel">Cancel</button></div></div>`;
+    } else html += `<button type="button" class="ghost" id="gAdd">+ Add a goal</button>`;
+    el.innerHTML = html;
+    el.querySelectorAll("[data-goal-del]").forEach(b => b.onclick = () => { plan.goals.splice(+b.dataset.goalDel, 1); writeStore(); renderGoals(); });
+    if ($("gAdd")) $("gAdd").onclick = () => { goalForm = true; renderGoals(); };
+    if ($("gCancel")) $("gCancel").onclick = () => { goalForm = false; renderGoals(); };
+    if ($("gSave")) $("gSave").onclick = () => {
+      const id = $("gEx").value, w = num($("gW").value), r = parseInt($("gR").value, 10);
+      if (!(w > 0) || !(r > 0)){ toast("Enter a weight and reps"); return; }
+      const ex = exs.find(e => e.id === id);
+      plan.goals = plan.goals.filter(g => g.exId !== id).concat([{ exId:id, name: ex ? ex.name : id, w, r, created: today() }]);
+      goalForm = false; writeStore(); renderGoals();
+    };
+  }
+
 
   /* ---------- exercise helpers ---------- */
   // target reps for set i (a set can carry its own target, e.g. a drop set)
@@ -484,7 +1581,7 @@ details[open]{display:flex;flex-direction:column;gap:10px}
   /* ---------- next-session progression ---------- */
   function pastFor(exId, beforeDate){
     return sessions
-      .filter(s => s.date < beforeDate && s.sets && Array.isArray(s.sets[exId]) && s.sets[exId].some(x => x && x.done && !x.drop))
+      .filter(s => s.date < beforeDate && !s.deload && s.sets && Array.isArray(s.sets[exId]) && s.sets[exId].some(x => x && x.done && !x.drop))
       .sort((a,b) => b.date.localeCompare(a.date));
   }
   function evalSession(ex, s){
@@ -494,6 +1591,11 @@ details[open]{display:flex;flex-direction:column;gap:10px}
     return { arr, allHit, top: ws.length ? Math.max(...ws) : 0 };
   }
   function suggest(ex){
+    const sg0 = suggestBase(ex);
+    if (!deloadActive()) return sg0;
+    return Object.assign({}, sg0, { kind:"hold", text:`<b>Deload week:</b> half the sets at about 10% lighter. Stop 2–3 reps short of failure.` });
+  }
+  function suggestBase(ex){
     const past = pastFor(ex.id, date);
     const inc = ex.inc || 5;
     if (!past.length) return { kind:"first", text:`<b>First time logging this.</b> Start light: pick a weight you could do for ${ex.reps[0]} with 2–3 reps left in the tank.`, weights: ex.reps.map(() => "") };
@@ -606,25 +1708,31 @@ details[open]{display:flex;flex-direction:column;gap:10px}
   /* ---------- session state ---------- */
   function docId(){ return `${date}_${dayId}`; }
   function day(){ return program && program.days.find(d => d.id === dayId); }
-  function freshSets(ex){ const sg = suggest(ex); return ex.reps.map((t,i) => ({ w: sg.weights[i] === "" ? "" : String(sg.weights[i]), r:"", done:false })); }
+  function freshSets(ex){
+    const sg = suggest(ex);
+    let rows = ex.reps.map((t,i) => ({ w: sg.weights[i] === "" ? "" : String(sg.weights[i]), r:"", done:false }));
+    if (deloadActive()) rows = rows.slice(0, Math.ceil(rows.length / 2)).map(x => ({ ...x, w: x.w === "" ? "" : String(r25(num(x.w) * 0.9)) }));
+    return rows;
+  }
   function loadSession(){
+    if (dayId === "flex" || dayId === "run" || dayId === "rest"){ const ex0 = sessions.find(s => s.id === docId()); cur = ex0 ? clone(ex0) : { id: docId(), date, dayId, sets:{} }; cur.mods = cur.mods || {}; cur.extra = cur.extra || []; cur.skip = cur.skip || {}; cur.prep = cur.prep || {}; return; }
     const d = day(); if (!d) { cur = null; return; }
     const existing = sessions.find(s => s.id === docId());
     cur = existing ? clone(existing) : { id: docId(), date, dayId, sets:{} };
-    cur.mods = cur.mods || {}; cur.extra = cur.extra || []; cur.skip = cur.skip || {};
+    cur.mods = cur.mods || {}; cur.extra = cur.extra || []; cur.skip = cur.skip || {}; cur.prep = cur.prep || {};
     effective(d).forEach(({ ex }) => { if (!Array.isArray(cur.sets[ex.id])) cur.sets[ex.id] = freshSets(ex); });
   }
   const KEY = "liftlog.v1";
   function readStore(){ try { const s = JSON.parse(localStorage.getItem(KEY) || "null"); return s && typeof s === "object" ? s : null; } catch(e){ return null; } }
   function writeStore(){
-    try { localStorage.setItem(KEY, JSON.stringify({ version:1, program, sessions: Object.fromEntries(sessions.map(s => [s.id, s])) })); if (typeof settings !== "undefined"){ settings.dirty = true; saveSettings(); } return true; }
+    try { localStorage.setItem(KEY, JSON.stringify({ version:1, program, plan, sessions: Object.fromEntries(sessions.map(s => [s.id, s])) })); if (typeof settings !== "undefined"){ settings.dirty = true; saveSettings(); } return true; }
     catch(e){ toast("Couldn't save: phone storage is full or blocked"); return false; }
   }
   function queueSave(){
     if (!cur) return;
     const d = day(), exInfo = {};
     if (d) effective(d).forEach(({ ex }) => { exInfo[ex.id] = { name: ex.name }; });
-    const body = { id: cur.id, date: cur.date, dayId: cur.dayId, sets: clone(cur.sets), mods: clone(cur.mods || {}), extra: clone(cur.extra || []), skip: clone(cur.skip || {}), exInfo, startedAt: cur.startedAt || null, lastAt: cur.lastAt || null, updatedAt: new Date().toISOString() };
+    const body = { id: cur.id, date: cur.date, dayId: cur.dayId, sets: clone(cur.sets), mods: clone(cur.mods || {}), extra: clone(cur.extra || []), skip: clone(cur.skip || {}), prep: clone(cur.prep || {}), run: cur.run ? clone(cur.run) : undefined, deload: deloadActive() && isLiftId(cur.dayId) ? true : undefined, exInfo, startedAt: cur.startedAt || null, lastAt: cur.lastAt || null, updatedAt: new Date().toISOString() };
     const i = sessions.findIndex(s => s.id === body.id);
     if (i >= 0) sessions[i] = body; else sessions.push(body);
     writeStore();
@@ -806,30 +1914,19 @@ details[open]{display:flex;flex-direction:column;gap:10px}
   };
 
   /* ---------- rendering ---------- */
-  function sessionHasWork(s){ return s.sets && Object.values(s.sets).some(a => Array.isArray(a) && a.some(x => x && x.done)); }
-  function renderDays(){
-    const el = $("days"); el.innerHTML = "";
-    if (!program) return;
-    const t = today();
-    program.days.forEach(d => {
-      const lastS = sessions.filter(s => s.dayId === d.id && sessionHasWork(s)).sort((a,b) => b.date.localeCompare(a.date))[0];
-      const doneToday = lastS && lastS.date === t;
-      const isToday = new Date().getDay() === d.weekday;
-      const b = document.createElement("button");
-      b.className = "day"; b.setAttribute("aria-pressed", d.id === dayId);
-      b.innerHTML = `<span class="wd">${WD[d.weekday]}${doneToday ? ' <span class="pill done">Done</span>' : isToday ? ' <span class="pill">Today</span>' : ""}</span><span class="nm">${esc(d.name)}</span><span class="ls">${lastS ? "Last: " + fmtDate(lastS.date) : "Not logged yet"}</span>`;
-      b.onclick = () => { dayId = d.id; loadSession(); render(); };
-      el.appendChild(b);
-    });
-  }
+  function sessionHasWork(s){ return (s.sets && Object.values(s.sets).some(a => Array.isArray(a) && a.some(x => x && x.done))) || ((s.dayId === "flex" || s.dayId === "rest") && s.prep && Object.keys(s.prep).some(k => k.startsWith("flex:"))) || ((s.dayId === "run" || s.dayId === "rest") && s.run && (s.run.dist || s.run.time)); }
   function renderCards(){
     const el = $("cards"); el.innerHTML = "";
+    if (dayId === "rest"){ $("dayTitle").textContent = "Rest day"; if (cur) renderRest(el); return; }
+    if (dayId === "flex"){ $("dayTitle").textContent = "Flexibility"; if (cur) renderFlex(el); return; }
+    if (dayId === "run"){ $("dayTitle").textContent = "Run"; if (cur) renderRun(el); return; }
     const d = day();
     $("dayTitle").textContent = d ? d.name : "";
     if (!d || !cur) return;
     let total = 0, done = 0;
     const list = effective(d);
     const tags = labels(list);
+    const wu = prepCard("warm", list); if (wu) el.appendChild(wu);
     list.forEach((item, ei) => {
       const ex = item.ex;
       const arr = cur.sets[ex.id] || (cur.sets[ex.id] = freshSets(ex));
@@ -847,13 +1944,16 @@ details[open]{display:flex;flex-direction:column;gap:10px}
         <div class="chead"><div class="tag">${esc(tags[ei])}</div>
           <div class="ctitle"><span class="nm">${esc(ex.name)}${tagTxt ? '<span class="new">' + esc(tagTxt) + '</span>' : ""}</span>
           ${ex.purpose ? `<span class="purpose">– ${esc(ex.purpose)}</span>` : ""}
-          <span class="rx">${repTxt} · ${restTxt}</span></div>
+          <span class="rx">${repTxt} · ${restTxt} · <a class="demo" href="${ytLink(ex.name + " proper form")}" target="_blank" rel="noopener">form video</a></span></div>
           <button class="edit" aria-label="Edit or swap ${esc(ex.name)}">Edit</button></div>
         ${ex.note ? `<div class="note">${esc(ex.note)}</div>` : ""}
         <div class="hint ${sg.kind}">${sg.text}</div>
         ${warmups(ex, arr, list.slice(0, ei))}
+        ${goalLine(ex)}
+        ${noteBlock(ex)}
         ${lastLine(ex) ? `<div class="last">${esc(lastLine(ex))}</div>` : ""}
         <div class="sets"></div>`;
+      wireNotes(card);
       card.querySelector(".edit").onclick = () => openEditor("edit", { ex, slot: item.slot, swapped: item.swapped, extraIndex: item.extra ? cur.extra.indexOf(ex) : null, ss: linkedNext, nextName: list[ei+1] ? list[ei+1].ex.name : null });
       const sets = card.querySelector(".sets");
       let n = 0;
@@ -915,6 +2015,14 @@ details[open]{display:flex;flex-direction:column;gap:10px}
       card.appendChild(btns);
       el.appendChild(card);
     });
+    const cd = prepCard("cool", list); if (cd) el.appendChild(cd);
+    if (uiFlexOnLift || flexCount(cur) > 0){ renderFlex(el, false); }
+    else {
+      const fb = document.createElement("button"); fb.type = "button"; fb.className = "ghost addex";
+      fb.textContent = "Do the full flexibility routine as your cool-down (14 min)";
+      fb.onclick = () => { uiFlexOnLift = true; render(); };
+      el.appendChild(fb);
+    }
     const skipped = d.exercises.filter(x => cur.skip && cur.skip[x.id]);
     if (skipped.length){
       const sk = document.createElement("div"); sk.className = "skipped";
@@ -944,25 +2052,37 @@ details[open]{display:flex;flex-direction:column;gap:10px}
         const name = (s.exInfo && s.exInfo[id] && s.exInfo[id].name) || byId[id] || id;
         rows += `<div class="hrow"><span>${esc(name)}</span><span>${arr.map(x => `${num(x.w) ?? 0}×${num(x.r) ?? "?"}${x.drop ? "↓" : ""}`).join(", ")}</span></div>`;
       });
-      c.innerHTML = `<div class="hh"><b>${esc(d ? d.name : s.dayId)}</b><span>${fmtDate(s.date)}</span></div>${rows}`;
+      if (s.dayId === "rest"){ const r = s.run || {}; rows = `<div class="hrow"><span>Stretches done</span><span>${flexCount(s)}/${FLEX_ITEMS.length}</span></div>` + (runDone(s) ? `<div class="hrow"><span>Run ${esc(r.dist ? r.dist + " mi" : "")}${r.time ? " in " + esc(r.time) : ""}</span><span>${fmtPace(parseDur(r.time), num(r.dist))}</span></div>` : ""); }
+      if (s.dayId === "run"){ const r = s.run || {}; rows = `<div class="hrow"><span>${esc(r.dist ? r.dist + " mi" : "Run")}${r.time ? " in " + esc(r.time) : ""}</span><span>${fmtPace(parseDur(r.time), num(r.dist))}${r.temp ? " · " + esc(r.temp) + "°F" : ""}${r.breath && r.breath !== "fine" ? " · breathing: " + (r.breath === "tight" ? "tight" : "stopped") : ""}</span></div>`; }
+      if (s.dayId === "flex"){ const n = Object.keys(s.prep || {}).filter(k => k.startsWith("flex:")).length; rows = `<div class="hrow"><span>Stretches done</span><span>${n}/${FLEX_ITEMS.length}</span></div>`; }
+      c.innerHTML = `<div class="hh"><b>${esc(d ? d.name : s.dayId === "flex" ? "Flexibility" : s.dayId === "run" ? "Run" : s.dayId === "rest" ? "Rest day" : s.dayId)}${s.deload ? " · deload" : ""}</b><span>${fmtDate(s.date)}</span></div>${rows}`;
       c.style.cursor = "pointer";
-      c.onclick = () => { dayId = s.dayId; date = s.date; $("dateIn").value = date; showTab("train"); loadSession(); render(); };
+      c.onclick = () => { dayId = s.dayId; date = s.date; weekOffset = Math.round((Date.parse(weekStart(s.date)) - Date.parse(weekStart(today()))) / (7*86400000)); showTab("train"); loadSession(); render(); };
       el.appendChild(c);
     });
   }
-  function render(){ renderDays(); renderCards(); tickClock(); renderBackup(); if ($("view-hist-wrap").style.display !== "none"){ renderHist(); renderProgress(); } }
+  function render(){
+    if (view === "plan"){ renderPlan(); return; }
+    if (view === "build"){ renderBuild(); return; }
+    renderStrip(); renderBanners(); renderCards(); tickClock(); renderBackup();
+    $("dayDate").textContent = date === today() ? "Today" : fmtDate(date);
+    if (view === "hist"){ renderHist(); renderProgress(); renderVolume(); renderGoals(); }
+  }
 
   function showTab(t){
+    view = t;
     $("tab-train").setAttribute("aria-pressed", t === "train");
     $("tab-hist").setAttribute("aria-pressed", t === "hist");
     $("view-train").style.display = t === "train" ? "flex" : "none";
     $("view-hist-wrap").style.display = t === "hist" ? "flex" : "none";
-    if (t === "hist"){ renderHist(); renderProgress(); renderBackup(); }
+    $("view-plan").style.display = t === "plan" ? "flex" : "none";
+    $("view-build").style.display = t === "build" ? "flex" : "none";
+    if (t === "hist"){ renderHist(); renderProgress(); renderBackup(); renderVolume(); renderGoals(); }
+    else render();
+    try { window.scrollTo(0, 0); } catch(e){}
   }
   $("tab-train").onclick = () => showTab("train");
   $("tab-hist").onclick = () => showTab("hist");
-  $("dateIn").value = date;
-  $("dateIn").onchange = () => { date = $("dateIn").value || today(); loadSession(); render(); };
 
   /* ---------- rest timer ---------- */
   let tEnd = 0, tInt = null, actx = null;
@@ -981,7 +2101,12 @@ details[open]{display:flex;flex-direction:column;gap:10px}
     } catch(e){}
     try { navigator.vibrate && navigator.vibrate([200,100,200]); } catch(e){}
   }
-  function startTimer(sec, label){
+  let tDone = null, tQuiet = false;
+  function shortBeep(){
+    try { if (!actx) return; const o = actx.createOscillator(), g = actx.createGain(); o.frequency.value = 660; o.connect(g); g.connect(actx.destination); const t0 = actx.currentTime; g.gain.setValueAtTime(.2, t0); g.gain.exponentialRampToValueAtTime(.001, t0 + .15); o.start(t0); o.stop(t0 + .16); } catch(e){}
+  }
+  function startTimer(sec, label, onDone, quiet){
+    tDone = onDone || null; tQuiet = !!quiet;
     tEnd = Date.now() + sec*1000;
     $("tLab").textContent = label; $("timer").className = "timer on";
     clearInterval(tInt); tick(); tInt = setInterval(tick, 250);
@@ -991,6 +2116,7 @@ details[open]{display:flex;flex-direction:column;gap:10px}
     $("tVal").textContent = `${Math.floor(left/60)}:${String(left%60).padStart(2,"0")}`;
     if (left <= 0){
       clearInterval(tInt); tInt = null;
+      if (tDone){ const f = tDone; tDone = null; if (!tQuiet) beep(); else shortBeep(); f(); return; }
       $("timer").className = "timer on go"; $("tLab").textContent = "Rest's over. Next set.";
       beep();
       setTimeout(() => { if (!tInt) $("timer").className = "timer"; }, 6000);
@@ -998,7 +2124,7 @@ details[open]{display:flex;flex-direction:column;gap:10px}
   }
   $("tPlus").onclick = () => { tEnd += 15000; if (!tInt){ $("timer").className = "timer on"; tInt = setInterval(tick, 250); } tick(); };
   $("tMinus").onclick = () => { tEnd -= 15000; tick(); };
-  $("tSkip").onclick = () => { clearInterval(tInt); tInt = null; $("timer").className = "timer"; };
+  $("tSkip").onclick = () => { if (tDone){ tEnd = Date.now(); tick(); return; } clearInterval(tInt); tInt = null; $("timer").className = "timer"; };
 
   let toastT = null;
   function toast(msg){ const t = $("toast"); t.textContent = msg; t.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("on"), 2200); }
@@ -1013,7 +2139,7 @@ details[open]{display:flex;flex-direction:column;gap:10px}
     dayId = order[0].id;
   }
   const DEFAULT_PROGRAM = {"days":[{"exercises":[{"group":"A","id":"bench","inc":5,"main":true,"name":"Barbell Bench Press","note":"Main exercise of the program. Rest 3-5 min. Maintain strength during the cut and progressively overload where you can.","purpose":"main chest and pressing strength lift","reps":[5,5,5],"rest":240},{"group":"B","id":"mshp","inc":5,"name":"Seated Machine Shoulder Press","note":"Rest 2-3 min.","purpose":"front delts and overhead pressing","reps":[12,12,12],"rest":150},{"bw":true,"group":"C","id":"chin","inc":2.5,"main":true,"name":"Chin-ups","note":"Hands supinated. Work up to 5 reps, then add weight over time. Log added weight; 0 = bodyweight.","purpose":"lat width and pulling strength, biceps assist","reps":[5,5,5],"rest":180},{"group":"D","id":"preacher_h","inc":5,"name":"EZ Bar Preacher Curl","note":"Rest 2-3 min. Control the eccentric on the way down.","purpose":"biceps isolation, strict form","reps":[12,12,12],"rest":150},{"group":"E","id":"rope","inc":5,"name":"Standing Rope Tricep Extension","note":"Rest 2-3 min.","purpose":"triceps, lockout strength for bench","reps":[12,12,12],"rest":150}],"id":"heavy","name":"Heavy Progression","weekday":2},{"exercises":[{"group":"A","id":"incline","inc":5,"name":"Incline Barbell Bench Press","note":"Pyramid: start light for 20, add weight each set as reps drop. Do a set of lat pulldowns between bench sets. 3 min rest.","purpose":"upper chest size","pyramid":true,"reps":[20,15,12,10,8],"rest":180},{"group":"B","id":"pulldown","inc":5,"name":"Lat Pulldown","note":"Done between incline bench sets.","purpose":"lat width","reps":[12,12,12],"rest":0},{"group":"C","id":"mrow","inc":5,"name":"Machine Row (single-arm, chest-supported)","purpose":"mid-back thickness","reps":[15,15,15],"rest":90},{"group":"D","id":"fly","inc":2.5,"name":"Cable Chest Fly","purpose":"chest stretch and isolation","reps":[15,15,15],"rest":75},{"added":"Added","group":"E","id":"lat_bb","inc":2.5,"name":"Dumbbell Lateral Raise","purpose":"side delts, shoulder width (2nd weekly dose)","reps":[15,15,15],"rest":60}],"id":"bb","name":"Bodybuilding Day","weekday":4},{"exercises":[{"group":"A1","id":"dbpress","inc":5,"name":"Dumbbell Shoulder Press","note":"Pyramid: start light for 20, add weight each set. Do a set of upright rows between every set.","purpose":"overall shoulder size and strength","pyramid":true,"reps":[20,15,12,10,8],"rest":0},{"group":"A2","id":"uprow","inc":5,"name":"Cable Upright Row","note":"Rest 2 min after upright rows.","purpose":"side delts and upper traps","reps":[10,10,10,10,10],"rest":120},{"group":"B1","id":"lat_sa","inc":2.5,"name":"Dumbbell Lateral Raise","purpose":"side delts, shoulder width","reps":[15,15,15],"rest":0},{"group":"B2","id":"reardelt","inc":2.5,"name":"Seated Dumbbell Rear Delt Fly","purpose":"rear delts, posture and shoulder balance","reps":[15,15,15],"rest":90},{"group":"C1","id":"dbcurl","inc":5,"name":"Dumbbell Curl (alternating)","note":"Alternating arms.","purpose":"overall biceps","reps":[10,10,10,10,10],"rest":0},{"group":"C2","id":"pushdown","inc":5,"name":"Bar Tricep Pushdown","note":"Rest 2 min after the superset.","purpose":"triceps (lateral and medial heads)","reps":[10,10,10,10,10],"rest":120},{"group":"D1","id":"preacher_s","inc":5,"name":"Preacher Curl","purpose":"biceps isolation, strict form","reps":[10,10,10,10,10],"rest":0},{"group":"D2","id":"ohtri","inc":5,"name":"Seated Cable Overhead Tricep Extension","note":"Can do this standing too. Rest 2 min after the superset.","purpose":"triceps long head, stretched position","reps":[10,10,10,10,10],"rest":120}],"id":"sa","name":"Shoulders & Arms","weekday":6},{"exercises":[{"group":"A","id":"legpress","inc":10,"main":true,"name":"Leg Press","note":"Rest 3 min. Aim to progressively overload over time.","purpose":"main quad and glute strength lift","reps":[8,8,8,8,8],"rest":180},{"group":"B","id":"calf","inc":10,"name":"Calf Raise on Leg Press","note":"Rest 1-1.5 min.","purpose":"calves","reps":[15,15,15,15,15],"rest":75},{"group":"C","id":"legext","inc":5,"name":"Leg Extension","note":"Rest 1 min, get a good burn.","purpose":"quad isolation","reps":[20,20,20],"rest":60},{"group":"D","id":"hamcurl","inc":5,"name":"Prone Machine Hamstring Curl","note":"Rest 1-1.5 min.","purpose":"hamstring isolation (knee bend)","reps":[12,12,12],"rest":75},{"added":"Added","group":"E","id":"rdl","inc":5,"name":"Romanian Deadlift","note":"Hinge at the hips with a slight knee bend; stop when you feel the hamstring stretch. Start very light.","purpose":"hamstrings and glutes, hip hinge strength","reps":[8,8,8],"rest":150}],"id":"legs","name":"Legs","weekday":0}],"name":"Coach's 4-day split + additions (Nov 2026)"};
-  function backupText(){ return JSON.stringify({ app:"Lift Log", exportedAt:new Date().toISOString(), version:1, program, sessions }, null, 1); }
+  function backupText(){ return JSON.stringify({ app:"Lift Log", exportedAt:new Date().toISOString(), version:1, program, plan, sessions }, null, 1); }
   /* ---------- settings ---------- */
   const SKEY = "liftlog.settings";
   let settings = (() => { try { return JSON.parse(localStorage.getItem(SKEY) || "{}") || {}; } catch(e){ return {}; } })();
@@ -1031,6 +2157,28 @@ details[open]{display:flex;flex-direction:column;gap:10px}
     const a = document.createElement("a"); a.href = URL.createObjectURL(f); a.download = f.name;
     document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
     markBackedUp("file");
+  }
+  // readable copy of the current routine for the "Program" tab
+  function programRows(){
+    const rows = [];
+    const days = {}; Object.keys(plan.assign || {}).forEach(w => { const id = plan.assign[w]; if (id) (days[id] = days[id] || []).push(WD[+w]); });
+    program.days.forEach(d => d.exercises.forEach((e, i) => {
+      const reps = e.reps || [];
+      const same = reps.every(r => r === reps[0]);
+      rows.push([d.name, (days[d.id] || []).join(", "), i + 1, e.name, reps.length, same ? reps[0] : reps.join("/"), e.rest ?? "",
+        (() => { const nx = d.exercises[i + 1], pv = d.exercises[i - 1], L = g => (/^([A-Z])\d$/.exec(g || "") || [])[1];
+          if (nx && (e.ss || (L(e.group) && L(e.group) === L(nx.group)))) return "with " + nx.name;
+          if (pv && (pv.ss || (L(pv.group) && L(pv.group) === L(e.group)))) return "with " + pv.name;
+          return ""; })(), e.purpose || "", (plan.notes && plan.notes[e.id]) || e.note || ""]);
+    }));
+    return rows;
+  }
+  function goalRows(){
+    return (plan.goals || []).map(g => {
+      const p = goalProgress(g);
+      const status = p.hit ? "Reached" : p.eta === "flat" ? "No upward trend yet" : p.eta ? "On pace for " + p.eta : "Needs more sessions";
+      return [g.name, g.w, g.r, Math.round(e1(g.w, g.r)), p.hit ? 100 : p.pct, status, g.created || ""];
+    });
   }
   function sheetRows(){
     const rows = [], names = {};
@@ -1053,7 +2201,8 @@ details[open]{display:flex;flex-direction:column;gap:10px}
   async function syncSheet(silent){
     if (!settings.sheetUrl){ if (!silent) openSetup(); return false; }
     try {
-      const body = JSON.stringify({ rows: sheetRows(), backup: JSON.parse(backupText()) });
+      const runs = sessions.filter(s => runDone(s)).sort((a,b) => a.date.localeCompare(b.date)).map(s => { const r = s.run, secs = parseDur(r.time), mi = num(r.dist); return [s.date, mi ?? "", r.time || "", secs && mi ? fmtPace(secs, mi).replace(" /mi","") : "", num(r.hr) ?? "", num(r.temp) ?? "", (BREATH.find(b => b[0] === r.breath) || ["",""])[1], r.note || ""]; });
+      const body = JSON.stringify({ rows: sheetRows(), runs, program: programRows(), goals: goalRows(), backup: JSON.parse(backupText()) });
       await fetch(settings.sheetUrl, { method:"POST", mode:"no-cors", headers:{ "Content-Type":"text/plain;charset=utf-8" },
         body, keepalive: !!silent && body.length < 60000 });
       markBackedUp("sheet"); if (!silent) toast("Synced to your Google Sheet");
@@ -1074,7 +2223,9 @@ details[open]{display:flex;flex-direction:column;gap:10px}
     d.sessions.forEach(s => { if (s && s.id && s.sets && (!map[s.id] || (s.updatedAt || "") >= (map[s.id].updatedAt || ""))) map[s.id] = s; });
     sessions = Object.values(map);
     if (d.program && Array.isArray(d.program.days)) program = d.program;
-    writeStore(); cur = null; pickDefaultDay(); loadSession(); render();
+    if (d.plan && typeof d.plan === "object") plan = d.plan;
+    ensurePlan();
+    writeStore(); cur = null; selectDate(today());
     toast("Restored " + d.sessions.length + " sessions");
   }
   function renderBackup(){
@@ -1113,6 +2264,7 @@ details[open]{display:flex;flex-direction:column;gap:10px}
   };
   // sync quietly when the app is put away after changes
   document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden" && settings.sheetUrl && settings.dirty) syncSheet(true); });
+
 
   /* ---------- progress chart ---------- */
   function progressSeries(id){
@@ -1182,9 +2334,10 @@ details[open]{display:flex;flex-direction:column;gap:10px}
     const s = readStore();
     program = s && s.program && Array.isArray(s.program.days) ? s.program : DEFAULT_PROGRAM;
     sessions = s && s.sessions ? Object.values(s.sessions) : [];
-    if (!s) writeStore();
+    plan = s && s.plan ? s.plan : null; ensurePlan();
+    if (!s || !s.plan) writeStore();
     try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch(e){}
-    pickDefaultDay(); loadSession(); render();
+    selectDate(today());
     if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
   })();
 })();

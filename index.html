@@ -1578,7 +1578,10 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
     const ar = document.createElement("button"); ar.type = "button"; ar.className = "ghost"; ar.textContent = "Auto-arrange for recovery";
     ar.onclick = () => { plan.assign = {}; rearrange(); writeStore(); renderPlan(); renderStrip(); toast("Arranged for recovery"); };
     as.appendChild(ar);
-    const nb = document.createElement("button"); nb.type = "button"; nb.className = "btnp"; nb.textContent = "Build a new routine";
+    const eb = document.createElement("button"); eb.type = "button"; eb.className = "btnp"; eb.textContent = "Edit this routine";
+    eb.onclick = () => startEdit();
+    as.appendChild(eb);
+    const nb = document.createElement("button"); nb.type = "button"; nb.className = "ghost"; nb.textContent = "Build a new routine";
     nb.onclick = () => { draft = null; showTab("build"); };
     as.appendChild(nb);
     el.appendChild(as);
@@ -1934,8 +1937,116 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
     return out;
   }
   let buildSwap = null, buildOpen = null, buildWhy = null, buildAdd = null, buildRest = null;
+  // edit the routine you're running: same editor as the builder, saved in place (no new block)
+  function startEdit(){
+    const days = clone(program.days);
+    days.forEach(d => d.exercises.forEach((e, i, L) => { if (typeof e.ss !== "boolean"){ const g = e.group || "", g2 = (L[i + 1] || {}).group || ""; e.ss = /^[A-Z]1$/.test(g) && g2 === g[0] + "2"; } }));
+    const opts = { legs: plan.legDays || 2, goal: phaseOf() ? PHASES[plan.phase.goal].emph : "size", phase: phaseOf() ? plan.phase.goal : null, styleR: plan.style,
+      prio: Object.assign(Object.fromEntries(TARGETED.map(m => [m, "normal"])), plan.prio || {}) };
+    draft = { edit: true, label: program.name || "Your routine", days, opts, cap: 75, n: days.length };
+    buildRest = plan.rest.slice(); buildSwap = buildOpen = buildWhy = buildAdd = buildMove = null;
+    showTab("build");
+  }
+  function unpairAt(list, i){
+    const e = list[i], pv = list[i - 1], rs = x => (meta(x) || {}).rest ?? 90;
+    if (e && e.ss){ e.ss = false; if (!e.rest) e.rest = rs(e); }
+    if (e && !e.rest) e.rest = rs(e);
+    if (pv && pv.ss){ pv.ss = false; if (!pv.rest) pv.rest = rs(pv); }
+  }
+  let buildMove = null;
+  function renderEdit(el){
+    const top = document.createElement("div"); top.className = "planhead";
+    top.innerHTML = `<button type="button" class="ghost navb" aria-label="Back to Your week">‹</button><h2>Edit your routine</h2>`;
+    top.querySelector("button").onclick = () => { draft = null; showTab("plan"); };
+    el.appendChild(top);
+    const ws = draft.days.flatMap(d => d.exercises), weekSets = muscleSets(ws);
+    const sp = document.createElement("div"); sp.className = "panel";
+    sp.innerHTML = `<div class="hh2"><b class="disp">${esc(draft.label)}</b><span class="sub">changes apply when you save</span></div><p class="sub">Reorder with ↑ ↓, move an exercise to another day, swap, remove or add. Weekdays stay as they are (change them in Your week). Your logged history and weights stay attached to each exercise.</p>`;
+    const wdsOf = id => Object.keys(plan.assign).map(Number).filter(w => plan.assign[w] === id && !plan.rest.includes(w)).map(w => WD[w]).join(", ");
+    draft.days.forEach((dd, di) => {
+      const mins = dayMinutes(dd.exercises), over = mins > draft.cap;
+      const box = document.createElement("details"); box.className = "bday"; if (buildOpen === di) box.open = true;
+      const wds = wdsOf(dd.id);
+      box.innerHTML = `<summary><span><b>${wds ? `<span class="bwdtag">${wds}</span> ` : ""}${esc(dd.name)}</b><small>${dd.exercises.length} exercises · ${dd.exercises.reduce((a, e) => a + e.reps.length, 0)} sets</small></span><span class="pmin${over ? " over" : ""}">~${mins} min</span></summary><div class="bex"></div>`;
+      box.addEventListener("toggle", () => { if (box.open) buildOpen = di; });
+      const bx = box.querySelector(".bex");
+      dd.exercises.forEach((e, i) => {
+        const r = document.createElement("div"); r.className = "brow";
+        r.innerHTML = `<span><b>${esc(e.name)}</b><small>${repLabel(e)}${e.ss && dd.exercises[i + 1] ? " · superset with next" : ""}${e.purpose ? " · " + esc(e.purpose) : ""}</small></span>
+          <span class="bbtns"><button type="button" class="linkbtn bup" aria-label="Move up"${i ? "" : " disabled"}>↑</button><button type="button" class="linkbtn bdn" aria-label="Move down"${i < dd.exercises.length - 1 ? "" : " disabled"}>↓</button><button type="button" class="linkbtn bmv">Move</button><button type="button" class="linkbtn bswap">Swap</button><button type="button" class="linkbtn brm">Remove</button></span>`;
+        const mv = (j) => { if (j < 0 || j >= dd.exercises.length) return; unpairAt(dd.exercises, i); if (j > i) unpairAt(dd.exercises, j); else unpairAt(dd.exercises, j);
+          const [x] = dd.exercises.splice(i, 1); dd.exercises.splice(j, 0, x); buildOpen = di; renderBuild(); };
+        r.querySelector(".bup").onclick = () => mv(i - 1);
+        r.querySelector(".bdn").onclick = () => mv(i + 1);
+        r.querySelector(".bmv").onclick = () => { buildMove = buildMove === di + ":" + i ? null : di + ":" + i; buildSwap = null; buildOpen = di; renderBuild(); };
+        r.querySelector(".bswap").onclick = () => { buildSwap = buildSwap === di + ":" + i ? null : di + ":" + i; buildMove = null; buildOpen = di; renderBuild(); };
+        r.querySelector(".brm").onclick = () => { unpairAt(dd.exercises, i); dd.exercises.splice(i, 1); buildSwap = buildMove = null; buildOpen = di; toast(`Removed ${e.name}`); renderBuild(); };
+        bx.appendChild(r);
+        if (buildMove === di + ":" + i){
+          const mb = document.createElement("div"); mb.className = "bswaps";
+          mb.innerHTML = `<small class="sub">Move ${esc(e.name)} to:</small>`;
+          draft.days.forEach((od, oi) => { if (oi === di) return;
+            const b = document.createElement("button"); b.type = "button"; b.className = "pick";
+            b.innerHTML = `<span>${esc(od.name)}</span><small>${wdsOf(od.id) || "not scheduled"} · ~${dayMinutes(od.exercises.concat([e]))} min after</small>`;
+            b.onclick = () => { unpairAt(dd.exercises, i); const [x] = dd.exercises.splice(i, 1); x.ss = false; od.exercises.push(x); buildMove = null; buildOpen = oi; toast(`Moved to ${od.name}`); renderBuild(); };
+            mb.appendChild(b); });
+          bx.appendChild(mb);
+        }
+        if (buildSwap === di + ":" + i){
+          const sw = document.createElement("div"); sw.className = "bswaps";
+          similarTo(e, 6).forEach(s => { const b = document.createElement("button"); b.type = "button"; b.className = "pick";
+            b.innerHTML = `<span>${esc(s.b.name)}</span><small>${esc(s.why + " · " + s.b.equip)}</small>`;
+            b.onclick = () => { const k = norm(s.b.name), yours = allExercises().find(x => norm(x.name) === k);
+              const ne = Object.assign({}, e, { id: yours ? yours.id : idForName(s.b.name), name: s.b.name, purpose: s.b.purpose || e.purpose, inc: (yours && yours.inc) || s.b.inc || e.inc, bw: !!s.b.bw, main: e.main && !!s.b.warm, note: "" });
+              dd.exercises[i] = ne; buildSwap = null; buildOpen = di; renderBuild(); };
+            sw.appendChild(b); });
+          bx.appendChild(sw);
+        }
+      });
+      const addB = document.createElement("button"); addB.type = "button"; addB.className = "ghost baddb"; addB.textContent = buildAdd === di ? "Close" : "+ Add exercise";
+      addB.onclick = () => { buildAdd = buildAdd === di ? null : di; buildOpen = di; renderBuild(); };
+      bx.appendChild(addB);
+      if (buildAdd === di){
+        const ap = document.createElement("div"); ap.className = "bswaps badd";
+        ap.innerHTML = `<input type="search" class="baddq" placeholder="Search exercises" autocomplete="off"><div class="baddl"></div>`;
+        const listEl = ap.querySelector(".baddl"), qi = ap.querySelector(".baddq");
+        const draw = () => { const words = qi.value.trim().toLowerCase().split(/\s+/).filter(Boolean); listEl.innerHTML = "";
+          if (!words.length){ listEl.innerHTML = `<small class="sub">Type to search the exercise library.</small>`; return; }
+          BANK.filter(b => words.every(w => (b.name + " " + b.muscle + " " + b.equip).toLowerCase().includes(w))).slice(0, 12).forEach(b => {
+            const bt = document.createElement("button"); bt.type = "button"; bt.className = "pick"; bt.innerHTML = `<span>${esc(b.name)}</span><small>${esc(b.muscle + " · " + b.equip)}</small>`;
+            bt.onclick = () => { const yours = allExercises().find(x => norm(x.name) === norm(b.name));
+              dd.exercises.push(Object.assign({ id: yours ? yours.id : idForName(b.name), name: b.name, reps: [10,10,10], rest: b.rest ?? 75, inc: b.inc || 5, purpose: b.purpose || "", bw: !!b.bw, ss: false }, yours ? { reps: yours.reps, rest: yours.rest, inc: yours.inc } : {}));
+              buildAdd = null; buildOpen = di; toast(`Added ${b.name}`); renderBuild(); };
+            listEl.appendChild(bt); }); };
+        qi.oninput = draw; draw();
+        bx.appendChild(ap);
+      }
+      sp.appendChild(box);
+    });
+    el.appendChild(sp);
+    // what changed vs what you run now
+    const before = muscleSets(program.days.flatMap(d => d.exercises)), r1 = x => Math.round(x * 2) / 2;
+    const diffs = TARGETED.filter(m => r1(before[m] || 0) !== r1(weekSets[m] || 0)).map(m => `${m.toLowerCase()} ${r1(before[m] || 0)} → ${r1(weekSets[m] || 0)}`);
+    const ev = document.createElement("div"); ev.className = "panel";
+    ev.innerHTML = `<div class="hh2"><b>Weekly sets that change</b></div><p class="sub">${diffs.length ? esc(diffs.join(", ")) : "No change in weekly sets per muscle."}</p>` + evidenceHTML(evidenceCheck(draft.days, draft.opts, draft.cap));
+    el.appendChild(ev);
+    const go = document.createElement("div"); go.className = "panel";
+    go.innerHTML = `<button type="button" class="btnp">Save changes</button><button type="button" class="ghost">Discard changes</button><p class="sub">Saving keeps your weekdays, rest days and current training block. The version before this edit is kept under Programs so you can switch back.</p>`;
+    const [sv, dc] = go.querySelectorAll("button");
+    sv.onclick = () => {
+      plan.saved.push({ name: (program.name || "Routine") + " (before edit " + today() + ")", program: clone(program), savedAt: today() });
+      program = Object.assign({}, program, { days: clone(draft.days) });
+      program.days.forEach(d => d.exercises.forEach(e => { delete e.group; }));
+      Object.keys(plan.overrides).forEach(k => { if (k >= today() && plan.overrides[k] !== "skip" && plan.overrides[k] !== "done") delete plan.overrides[k]; });
+      draft = null; writeStore(); showTab("plan"); renderStrip(); toast("Routine saved");
+      if (settings.sheetUrl) syncSheet(true);
+    };
+    dc.onclick = () => { draft = null; showTab("plan"); toast("No changes saved"); };
+    el.appendChild(go);
+  }
   function renderBuild(){
     const el = $("view-build"); el.innerHTML = "";
+    if (draft && draft.edit) return renderEdit(el);
     if (!draft || !buildRest) buildRest = plan.rest.slice(); // rest days for the routine being built (applied on Start)
     const open = 7 - buildRest.length;
     const n = Math.max(2, Math.min(6, (draft && draft.n) || Math.min(open, program.days.length || 4, 6)));

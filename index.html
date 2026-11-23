@@ -262,9 +262,15 @@ details[open]{display:flex;flex-direction:column;gap:10px}
 .clock{font-family:var(--display);font-size:1.15rem;font-weight:700;font-variant-numeric:tabular-nums;color:var(--muted);padding:2px 9px;border-radius:8px;background:var(--soft)}
 .clock.run{color:var(--good)}
 .clock.long{color:var(--warn)}
-.phchips{flex-wrap:wrap}
+.phchips,.phbchips,.prpre{flex-wrap:wrap}
+.prgrid{display:grid;gap:6px;margin:6px 0}.prrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;font-size:.86rem}
+.prrow small{display:block;color:var(--muted);font-size:.74rem}.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:transparent;color:inherit;font:inherit;font-size:.78rem;padding:5px 9px;min-height:32px}.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--surface);font-weight:600}
 .bwrow{display:grid;grid-template-columns:1fr 96px auto;gap:8px;align-items:center;margin:8px 0 4px;font-size:.86rem}.bwrow input{padding:7px 8px;border:1px solid var(--line);border-radius:8px;background:transparent;color:inherit;font:inherit}
 .bwsvg{width:100%;height:70px;display:block;margin-top:6px}.bwax{display:flex;justify-content:space-between;font-size:.72rem}
+details.ev{border-top:1px solid var(--line);padding:6px 0;font-size:.86rem}details.ev summary{display:grid;grid-template-columns:18px 1fr;gap:6px;cursor:pointer;list-style:none}details.ev summary small{color:var(--muted)}details.ev p{margin:4px 0 0 24px}
+.evwrap > summary{cursor:pointer;padding:2px 0}.bench td{white-space:nowrap;font-size:.84rem;padding-left:4px;padding-right:4px}.bench .bmisc td{font-size:.8rem}.bench td small{color:var(--muted);font-size:.66rem}.bench th{font-size:.74rem}
 .verdict{border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin:6px 0 10px;font-size:.86rem}.verdict .whyl{margin-top:2px}.verdict > div{margin-top:6px}
 .cmp{width:100%;border-collapse:collapse;font-size:.86rem;font-variant-numeric:tabular-nums}.cmp th,.cmp td{padding:5px 4px;border-bottom:1px solid var(--line);text-align:right}.cmp th:first-child,.cmp td:first-child{text-align:left}.cmp th{color:var(--muted);font-weight:500}.cmp tr.cmph td{text-align:left;font-weight:600;padding-top:12px}
 .vrow.info{opacity:.75}.vrow small{font-weight:400;color:var(--muted)}
@@ -1164,7 +1170,7 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
     const inBlock = sessions.filter(s => s.date >= start && s.date <= end && isLiftId(s.dayId) && sessionHasWork(s));
     const work = inBlock.filter(s => !s.deload);
     const weeks = Math.max(1, Math.round((Date.parse(end) - Date.parse(start)) / (7 * 86400000)));
-    let up = 0, held = 0, down = 0, none = 0, best = null, bestPct = 0;
+    let up = 0, held = 0, down = 0, none = 0, best = null, bestPct = 0; const byM = {};
     const seen = new Set();
     program.days.forEach(d => d.exercises.forEach(ex => {
       if (seen.has(ex.id)) return; seen.add(ex.id);
@@ -1173,6 +1179,7 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
       const a = Math.max(...pts.slice(0, 2).map(x => x.v)), z = Math.max(...pts.slice(-2).map(x => x.v));
       const pct = a ? (z - a) / a * 100 : 0;
       if (pct >= 2) up++; else if (pct <= -2) down++; else held++;
+      const mu = (meta(ex) || {}).muscle; if (mu){ (byM[mu] = byM[mu] || { up:0, held:0, down:0 })[pct >= 2 ? "up" : pct <= -2 ? "down" : "held"]++; }
       if (pct > bestPct){ bestPct = pct; best = `${ex.name} +${Math.round(pct)}%`; }
     }));
     // average weekly sets per muscle, deload week excluded
@@ -1185,8 +1192,8 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
     }));
     const wkWork = Math.max(1, weeks - (inBlock.some(s => s.deload) ? 1 : 0));
     const avg = m => Math.round((tot[m] || 0) / wkWork * 2) / 2;
-    const legsOnce = plan.legDays === 1 ? ["Quads","Hamstrings","Glutes","Calves"] : [];
-    const low = TARGETED.filter(m => !legsOnce.includes(m) && avg(m) < 10).map(m => [m, avg(m)]);
+    const po0 = { prio: plan.prio, phase: phaseOf() ? plan.phase.goal : null, styleR: plan.style };
+    const low = TARGETED.filter(m => avg(m) < tierRange(po0, m)[0] - 0.5).map(m => [m, avg(m), tierRange(po0, m)[0]]);
     const high = TARGETED.filter(m => avg(m) > 20).map(m => [m, avg(m)]);
     // consistency: planned lifting days vs done; exercises skipped or swapped 2+ times
     let planned = 0, done = 0;
@@ -1206,7 +1213,18 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
       const okBw = bwRate == null ? null : bwRate >= P.lo - 0.1 && bwRate <= P.hi + 0.1;
       goalLine = { text: `${P.label}: ${lifts}; ${bwTxt}.`, ok: okLifts && okBw !== false };
     }
-    return { weeks, up, held, down, none, best, low, high, planned: Math.max(planned, done), done, skipped, goalLine };
+    // volume suggestions per muscle (evaluate the block, then adjust): progressing → keep; stalled with good attendance → +2 sets;
+    // going backwards → −2 sets. On a cut, holding steady counts as progress.
+    const attend = Math.max(planned, done) ? done / Math.max(planned, done) : 1, po = { prio: plan.prio, phase: ph ? ph.goal : null, styleR: plan.style };
+    const sugg = [];
+    TARGETED.forEach(m => {
+      const r = byM[m]; if (!r) return; const n = r.up + r.held + r.down; if (!n) return;
+      const [lo, hi] = tierRange(po, m), v = avg(m);
+      if (r.down > n / 2) sugg.push({ m, d: -2, why: `${r.down} of ${n} ${m.toLowerCase()} lifts went down: likely more than you're recovering from (or sleep/food). Try 2 fewer sets.` });
+      else if (r.up >= Math.max(1, n / 2) || (ph && ph.goal === "cut" && r.down === 0)) sugg.push({ m, d: 0, why: `${m} progressing: keep ${v} sets.` });
+      else if (attend >= 0.8 && v <= hi + 2) sugg.push({ m, d: 2, why: `${m} stalled (${r.held} of ${n} lifts flat) with ${Math.round(attend * 100)}% of workouts done: try 2 more sets.` });
+    });
+    return { weeks, up, held, down, none, best, low, high, planned: Math.max(planned, done), done, skipped, goalLine, sugg };
   }
 
   /* ---------- overall goal (phase) + bodyweight ----------
@@ -1360,12 +1378,13 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
         <ul class="whyl">
           ${R.goalLine ? `<li><b>Goal:</b> <span class="${R.goalLine.ok ? "okc" : "warnc"}">${esc(R.goalLine.text)}</span></li>` : ""}
           <li><b>Lifts:</b> ${R.up} went up, ${R.held} held, ${R.down} went down${R.none ? `, ${R.none} not enough data` : ""}.${R.best ? ` Best: ${esc(R.best)}.` : ""}</li>
-          <li><b>Weekly sets:</b> ${R.low.length || R.high.length ? [R.low.length ? "under 10: " + R.low.map(([m, v]) => `${m.toLowerCase()} ${v}`).join(", ") : "", R.high.length ? "over 20: " + R.high.map(([m, v]) => `${m.toLowerCase()} ${v}`).join(", ") : ""].filter(Boolean).join("; ") : "every targeted muscle averaged 10–20"}.</li>
+          <li><b>Weekly sets:</b> ${R.low.length || R.high.length ? [R.low.length ? "under target: " + R.low.map(([m, v, lo]) => `${m.toLowerCase()} ${v} (aim ${lo}+)`).join(", ") : "", R.high.length ? "over 20: " + R.high.map(([m, v]) => `${m.toLowerCase()} ${v}`).join(", ") : ""].filter(Boolean).join("; ") : "every muscle averaged within its target"}.</li>
+          ${R.sugg.filter(s => s.d).length ? `<li><b>Volume next block:</b> ${R.sugg.filter(s => s.d).map(s => `<span class="${s.d > 0 ? "okc" : "warnc"}">${esc(s.m.toLowerCase())} ${s.d > 0 ? "+" : ""}${s.d}</span>`).join(", ")}<ul class="whyl">${R.sugg.filter(s => s.d).map(s => `<li>${esc(s.why)}</li>`).join("")}</ul></li>` : R.sugg.length ? `<li><b>Volume next block:</b> keep as is; the muscles you trained are progressing.</li>` : ""}
           <li><b>Consistency:</b> ${R.done}/${R.planned} planned workouts done${R.skipped.length ? `; often skipped or swapped: ${R.skipped.map(x => esc(x)).join(", ")}` : ""}.</li>
         </ul>
-        <div class="setbtns"><button type="button" class="btnp">Keep it</button><button type="button" class="ghost badj">Adjust in builder</button><button type="button" class="ghost bback">Go back</button></div>`;
+        <div class="setbtns"><button type="button" class="btnp">Keep it</button><button type="button" class="ghost badj">${R.sugg.some(s => s.d) ? "Apply in builder" : "Adjust in builder"}</button><button type="button" class="ghost bback">Go back</button></div>`;
       b.querySelector(".btnp").onclick = () => { plan.trial = null; writeStore(); render(); toast("Kept. A new block starts now"); };
-      b.querySelector(".badj").onclick = () => { plan.trial = null; writeStore(); draft = null; showTab("build"); };
+      b.querySelector(".badj").onclick = () => { plan.trial = null; const ad = {}; R.sugg.forEach(s => { if (s.d) ad[s.m] = s.d; }); plan.volAdj = Object.keys(ad).length ? ad : null; writeStore(); draft = null; showTab("build"); if (plan.volAdj) toast("Review adjustments applied to the builder targets"); };
       b.querySelector(".bback").onclick = () => { switchProgram(plan.saved.length - 1); plan.trial = null; writeStore(); toast(`Back to ${prevName}`); };
       el.appendChild(b);
     }
@@ -1459,6 +1478,8 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
     el.appendChild(top);
 
     renderPhase(el);
+    { const cr = document.createElement("details"); cr.className = "panel evwrap"; const chk = evidenceCheck(program.days, { prio: plan.prio, phase: phaseOf() ? plan.phase.goal : null, styleR: plan.style }, 75);
+      cr.innerHTML = `<summary><b>Evidence check of your current routine: ${chk.filter(c => c.ok).length}/${chk.length}</b></summary>` + evidenceHTML(chk) + benchHTML(program.days, program.days.length, { prio: plan.prio }); el.appendChild(cr); }
     // rest days
     const rd = document.createElement("div"); rd.className = "panel";
     rd.innerHTML = `<div class="hh2"><b>Rest days</b><span class="sub">tap to change</span></div><div class="strip restpick"></div><p class="sub"></p>`;
@@ -1578,6 +1599,19 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
     fbC: { name:"Full body C", ex:[T("Pull-ups",3,8,{ss:true}), T("Dips",3,8), T("Seated Leg Curl",3,10,{ss:true}), T("Leg Extension",3,12), T("Reverse Pec Deck",3,15), T("Standing Calf Raise Machine",5,12)] }
   };
   // each entry: [label, template keys, one-line description]. First option is the default.
+  // extra work for a high-priority muscle: a different movement than the day already has
+  const PRIO_EX = {
+    "Chest":[T("Machine Chest Press",3,10), T("Cable Chest Fly",3,15), T("Incline Machine Chest Press",3,10)],
+    "Back":[T("Chest-Supported Machine Row",3,10), T("Straight-Arm Pulldown",3,12), T("Close-Grip Lat Pulldown",3,10)],
+    "Side Delts":[T("Machine Lateral Raise",3,15), T("Cable Lateral Raise",3,15)],
+    "Rear Delts":[T("Cable Rear Delt Fly",3,15), T("Face Pull",3,15)],
+    "Biceps":[T("Bayesian Cable Curl",3,12), T("Preacher Curl",3,12)],
+    "Triceps":[T("Single-Arm Cable Pushdown",3,12), T("Seated Cable Overhead Tricep Extension",3,12)],
+    "Quads":[T("Hack Squat",3,10), T("Leg Extension",3,12)],
+    "Hamstrings":[T("Seated Leg Curl",3,12), T("Prone Machine Hamstring Curl",3,12)],
+    "Glutes":[T("Barbell Hip Thrust",3,10), T("Hip Abduction Machine",3,15)],
+    "Calves":[T("Seated Calf Raise",3,15), T("Standing Calf Raise Machine",3,12)]
+  };
   const SPLITS1 = {
     2:[["Upper + Legs", ["upperA","legsFull"], "each muscle once a week"]],
     3:[["Upper / Legs / Upper", ["upperA","legsFull","upperB"], "upper body twice, legs once"],
@@ -1617,10 +1651,36 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
     return { id: known ? known.id : idForName(t.name), name: b.name || t.name, reps: Array(t.sets).fill(t.reps), rest: t.ss ? 0 : (b.rest ?? 90), inc: b.inc ?? 5, main: !!b.main, bw: !!b.bw, purpose: b.purpose || "", ss: !!t.ss, group: "" };
   }
   function makeDraft(n, cap, o){
-    o = Object.assign({ legs:2, goal:"size", focus:[], split:0, phase:null }, o || {});
+    o = Object.assign({ legs:2, goal:"size", focus:[], split:0, phase:null, prio:null, adj:null }, o || {});
+    // muscle priorities: maintenance 4–8 sets/week, normal 10–14, high 14–20 (block-review adjustments shift these)
+    const prio = o.prio || {}, adjS = o.adj || {};
+    const tierOf = m => prio[m] || "normal";
+    o.styleR = (o.style === "minmax" || o.style === "volume") ? o.style : styleAuto(o.phase, cap);
+    const MM = o.styleR === "minmax", minS = 2, maxS = MM ? 2 : 4;
+    // Min-Max trims whole exercises, never sets: 2 hard sets of fewer movements beats 1 set of many (each exercise also costs warm-ups and setup)
+    const MM_MAX_EX = 7;
+    function mmDropOne(d, why){
+      const wk = muscleSets(days.flatMap(x => x.exercises)), patCount = {};
+      days.forEach(x => x.exercises.forEach(e => { const m = meta(e); if (m){ const k = m.muscle + ":" + patternOf(m).pat; patCount[k] = (patCount[k] || 0) + 1; } }));
+      const c = d.exercises.map((e, k) => { const m = meta(e) || {}, mu = m.muscle, tg = TARGETED.includes(mu);
+          return { e, k, mu, tg, after: (wk[mu] || 0) - e.reps.length, over: tg ? (wk[mu] || 0) - tmax(mu) : 99, dup: patCount[mu + ":" + (m.muscle ? patternOf(m).pat : "")] > 1 ? 1 : 0, iso: !m.warm && !m.bw ? 1 : 0 }; })
+        .filter(x => x.k > 0 && !x.e.main && (!x.tg || x.after >= tmin(x.mu) - 0.5))
+        .sort((a, b) => (b.tg ? 0 : 1) - (a.tg ? 0 : 1) || (b.over > 0) - (a.over > 0) || b.dup - a.dup || b.iso - a.iso || b.after - a.after)[0];
+      if (!c) return false;
+      const i = d.exercises.indexOf(c.e), pv = d.exercises[i - 1], nx = d.exercises[i + 1];
+      if (c.e.ss && nx){ nx.rest = (meta(nx) || {}).rest ?? 75; }
+      if (pv && pv.ss){ pv.ss = false; pv.rest = (meta(pv) || {}).rest ?? 75; }
+      d.exercises.splice(i, 1);
+      const host = d.exercises.find(e => (meta(e) || {}).muscle === c.mu) || d.exercises[0];
+      if (host) (host.adj = host.adj || []).push(`Min-Max: dropped ${c.e.name} ${why}, rather than cutting other exercises to 1 set.`);
+      return true;
+    }
+    const tmin = m => tierRange(Object.assign({}, o, { prio }), m)[0];
+    const tmax = m => tierRange(Object.assign({}, o, { prio }), m)[1];
+    if (o.prio) o.legs = ["Quads","Hamstrings","Glutes"].every(m => tierOf(m) === "maint") ? 1 : 2; // legs on maintenance → one leg day
     // goal shapes the routine: cut = higher intensity, lower volume (recovery is lower in a deficit);
     // build = more volume (a surplus supports it); recomp/strength = standard volume
-    const capSets = o.phase === "cut" ? 14 : 20;
+    const capOf = mu => TARGETED.includes(mu) ? tmax(mu) : 20;
     const list = (o.legs === 1 ? SPLITS1 : SPLITS)[n];
     const [label0, keys] = list[Math.min(o.split || 0, list.length - 1)];
     const days = keys.map(k => ({ id: "b" + n + "-" + k, name: TEMPLATES[k].name, exercises: TEMPLATES[k].ex.map(exFromTemplate) }));
@@ -1644,10 +1704,12 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
         else if (o.goal === "size" && e.reps[0] < 6){ e.reps = e.reps.map(() => 8); }
       });
     });
+    if (MM) days.forEach(d => d.exercises.forEach(e => { if (e.reps.length > 2){ e.reps = e.reps.slice(0, 2); (e.adj = e.adj || []).push("Min-Max: 2 hard sets instead of 3+. Each set goes to failure or 1 rep short, so fewer sets give a similar stimulus in less time and with less fatigue to recover from."); } }));
     // effort guidance: growth depends on how close sets get to failure
     days.forEach(d => d.exercises.forEach(e => {
       const m = BANK_BY[norm(e.name)] || {};
-      e.note = e.note || ((m.warm || m.bw) ? (e.reps[0] <= 6 ? "Stop 1–2 reps before failure; keep form tight." : "End sets 1–2 reps before failure.") : "Go to 0–1 reps left; last set to failure is fine.");
+      e.note = e.note || (MM ? ((m.warm || m.bw) ? "Min-Max: take it to 0–1 reps left (stop at 1 if form starts to break)." : "Min-Max: take every set to failure.")
+        : (m.warm || m.bw) ? (e.reps[0] <= 6 ? "Stop 1–2 reps before failure; keep form tight." : "End sets 1–2 reps before failure.") : "Go to 0–1 reps left; last set to failure is fine.");
     }));
     // where focus work goes: early, but never right before an exercise it would tire out.
     // Biceps help every row/pulldown and triceps help every press, so curls go after the day's back work
@@ -1656,14 +1718,16 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
     function focusSlot(d, group){
       const blocks = new Set([].concat(...group.map(e => HELPS[(meta(e) || {}).muscle] || [])));
       let pos = 1;
-      d.exercises.forEach((x, k) => { const m = meta(x); if (m && blocks.has(m.muscle) && (m.warm || m.bw || /press|dip|row|pull/i.test(x.name))) pos = Math.max(pos, k + 1); });
+      const own = new Set(group.filter(e => { const m = meta(e); return m && !m.warm && !m.bw; }).map(e => meta(e).muscle)); // isolation goes after that muscle's compounds
+      d.exercises.forEach((x, k) => { const m = meta(x); if (m && ((blocks.has(m.muscle) && (m.warm || m.bw || /press|dip|row|pull/i.test(x.name))) || (own.has(m.muscle) && (m.warm || m.bw)))) pos = Math.max(pos, k + 1); });
       while (pos < d.exercises.length && d.exercises[pos - 1] && d.exercises[pos - 1].ss) pos++;
       return Math.min(pos, d.exercises.length);
     }
     // focus muscles (pick several): each adds one exercise on two days that train it, early in the session
-    const foci = (Array.isArray(o.focus) ? o.focus : o.focus && o.focus !== "None" ? [o.focus] : []).filter(f => FOCUS[f]);
+    const foci = o.prio ? TARGETED.filter(m => tierOf(m) === "high") : (Array.isArray(o.focus) ? o.focus : []).filter(f => FOCUS[f]);
+    const FX = f => PRIO_EX[f] ? { muscle:f, ex:PRIO_EX[f] } : FOCUS[f];
     foci.forEach(fname => {
-      const F = FOCUS[fname];
+      const F = FX(fname);
       const trains = d => d.exercises.some(e => [F.muscle, F.also].includes((meta(e) || {}).muscle));
       // put focus work on the days with the most spare time (shortest first), so it isn't trimmed away later
       const targets = days.filter(trains).map(d => ({ d, m: dayMinutes(d.exercises) })).sort((x, y) => x.m - y.m).slice(0, 2).map(x => x.d);
@@ -1671,18 +1735,18 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
         // never stack the same movement: if the day already has a fly, the focus adds a press (and vice versa)
         const pats = new Set(d.exercises.map(e => { const m = meta(e); return m ? patternOf(m).pat : ""; }));
         const fresh0 = F.ex.filter(t => { const m = BANK_BY[norm(t.name)]; return m && !pats.has(patternOf(m).pat); });
-        const pickT = fname === "Arms" ? fresh0 : fresh0.length ? [fresh0[i % fresh0.length]] : [];
+        const pickT = fresh0.length ? [fresh0[i % fresh0.length]] : [];
         if (!pickT.length){
           // every focus movement is already here: add a set to the day's first exercise for that muscle instead
           const e0 = d.exercises.find(e => (meta(e) || {}).muscle === F.muscle);
-          if (e0){ e0.reps.push(e0.reps[e0.reps.length - 1]); (e0.adj = e0.adj || []).push(`One extra set for your ${fname.toLowerCase()} focus (this day already has that movement).`); }
+          if (e0 && e0.reps.length < maxS){ e0.reps.push(e0.reps[e0.reps.length - 1]); (e0.adj = e0.adj || []).push(`One extra set: ${fname.toLowerCase()} is a high priority (this day already has that movement).`); }
           return;
         }
-        const add = pickT.map(exFromTemplate);
+        const add = pickT.map(exFromTemplate).map(e => { e.ss = false; e.rest = (meta(e) || {}).rest ?? 60; if (e.reps.length > maxS) e.reps = e.reps.slice(0, maxS); return e; }); // added work stands alone (no accidental superset chains)
         const have = new Set(d.exercises.map(e => norm(e.name)));
         const fresh = add.filter(e => !have.has(norm(e.name)));
         if (!fresh.length) return;
-        fresh.forEach(e => (e.adj = e.adj || []).push(`Added for your ${fname.toLowerCase()} focus, placed early so you do it fresh.`));
+        fresh.forEach(e => (e.adj = e.adj || []).push(`Added because ${fname.toLowerCase()} is a high priority; placed early so you do it fresh.`));
         // after the day's first (main) lift, so the focus muscle is trained while you're fresh
         d.exercises.splice(focusSlot(d, fresh), 0, ...fresh);
       });
@@ -1693,9 +1757,9 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
         const pool = [].concat(...days.map(d => d.exercises)).filter(e => (meta(e) || {}).muscle === mu && !(BANK_BY[norm(e.name)] || {}).warm);
         const order = pool.filter(e => !added.has(norm(e.name))).concat(pool.filter(e => added.has(norm(e.name))));
         let guard = 40;
-        while ((week()[mu] || 0) > capSets + 2 * (o.phase === "cut") && guard--){
-          const e = order.find(x => x.reps.length > 2); if (!e) break;
-          e.reps.pop(); if (!(e.adj || []).some(t => t.startsWith("Trimmed"))) (e.adj = e.adj || []).push(`Trimmed a set so ${mu.toLowerCase()} stays near ${capSets + 2 * (o.phase === "cut")} sets a week with your focus.`);
+        while ((week()[mu] || 0) > capOf(mu) && guard--){
+          const e = order.find(x => x.reps.length > minS); if (!e) break;
+          e.reps.pop(); if (!(e.adj || []).some(t => t.startsWith("Trimmed"))) (e.adj = e.adj || []).push(`Trimmed a set so ${mu.toLowerCase()} stays within its ${tmin(mu)}–${capOf(mu)} set target.`);
         }
       });
     });
@@ -1704,22 +1768,22 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
     const isIso = e => { const m = BANK_BY[norm(e.name)] || {}; return !m.warm && !m.bw; };
     Object.keys(muscleSets(all())).forEach(mu => {
       let guard = 60;
-      while ((muscleSets(all())[mu] || 0) > capSets + 0.5 && guard--){
-        const pool = all().filter(e => (meta(e) || {}).muscle === mu && isIso(e) && e.reps.length > 2).sort((a, b) => b.reps.length - a.reps.length);
+      while ((muscleSets(all())[mu] || 0) > capOf(mu) + 0.5 && guard--){
+        const pool = all().filter(e => (meta(e) || {}).muscle === mu && isIso(e) && e.reps.length > minS).sort((a, b) => b.reps.length - a.reps.length);
         if (!pool.length){
           // every isolation move is at 2 sets: drop one that isn't the focus pick, if the muscle keeps another exercise
-          const keep = new Set([].concat(...foci.map(f => FOCUS[f].ex.map(x => norm(x.name)))));
+          const keep = new Set([].concat(...foci.map(f => FX(f).ex.map(x => norm(x.name)))));
           const isos = all().filter(e => (meta(e) || {}).muscle === mu && isIso(e) && !keep.has(norm(e.name)));
           const others = all().filter(e => (meta(e) || {}).muscle === mu).length;
-          if (!isos.length || others < 3) break;
+          if (!isos.length || others < (tierOf(mu) === "maint" ? 2 : 3)) break;
           const victim = isos[isos.length - 1];
           days.forEach(d => { const i = d.exercises.indexOf(victim); if (i >= 0){ if (i > 0 && d.exercises[i-1].ss && !victim.ss) d.exercises[i-1].ss = false; d.exercises.splice(i, 1); } });
           continue;
         }
-        pool[0].reps.pop(); if (!(pool[0].adj || []).some(t => t.startsWith("Trimmed"))) (pool[0].adj = pool[0].adj || []).push(o.phase === "cut" ? `Trimmed a set: on a cut, ${mu.toLowerCase()} is kept near ${capSets} sets a week because recovery is lower in a deficit.` : `Trimmed a set: ${mu.toLowerCase()} was over ~20 sets a week, where extra sets add little.`);
+        pool[0].reps.pop(); if (!(pool[0].adj || []).some(t => t.startsWith("Trimmed"))) (pool[0].adj = pool[0].adj || []).push(tierOf(mu) === "maint" ? `Trimmed a set: ${mu.toLowerCase()} is on maintenance (${tmin(mu)}–${capOf(mu)} sets a week), which keeps what you have with less time.` : o.phase === "cut" ? `Trimmed a set: on a cut, ${mu.toLowerCase()} is kept near ${capOf(mu)} sets a week because recovery is lower in a deficit.` : `Trimmed a set: ${mu.toLowerCase()} was over ~${capOf(mu)} sets a week, where extra sets add little.`);
       }
     });
-    if (o.phase === "cut") days.forEach(d => d.exercises.forEach(e => {
+    if (o.phase === "cut" && !MM) days.forEach(d => d.exercises.forEach(e => {
       const m = meta(e); if (!m || !(m.warm || m.bw) || m.muscle === "Core" || patternOf(m).pat === "hinge" || e.reps[0] <= 6) return;
       e.reps = e.reps.map(() => 6); e.rest = Math.max(e.rest || 0, 150);
       (e.adj = e.adj || []).push("Cut: heavier (6–8 reps) with a bit more rest. Heavy loads are the main signal to keep strength and muscle in a deficit, so intensity goes up while total sets stay moderate.");
@@ -1729,34 +1793,41 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
     days.forEach(d => d.exercises.forEach((e, i) => { const nx = d.exercises[i + 1]; if (e.ss && nx){ const n = Math.max(e.reps.length, nx.reps.length);
       [e, nx].forEach(x => { while (x.reps.length < n) x.reps.push(x.reps[x.reps.length - 1]); }); } }));
     // focus muscles are the last thing a time trim touches
-    const focusMus = new Set([].concat(...foci.map(f => [FOCUS[f].muscle, FOCUS[f].also].filter(Boolean))));
+    const focusMus = new Set([].concat(...foci.map(f => [FX(f).muscle, FX(f).also].filter(Boolean))));
     // time ceiling: keep every day at or under the chosen cap (60 or 75 min). Cheapest fixes first: shorter isolation rest, then a set off
     // the isolation move whose muscle has the most weekly volume (never below 10 sets for that muscle)
+    if (MM) days.forEach(d => {
+      // legs on maintenance: hip adduction/abduction are extras a Min-Max maintenance day doesn't need
+      if (tierOf("Glutes") === "maint") d.exercises = d.exercises.filter((e, i, L) => { const keep = !/Hip (Ad|Ab)duction/.test(e.name); if (!keep && L[i - 1] && L[i - 1].ss && !/Hip (Ad|Ab)duction/.test(L[i - 1].name)) L[i - 1].ss = false; return keep; });
+      let guard = 12;
+      while ((dayMinutes(d.exercises) > (cap || 75) || d.exercises.length > MM_MAX_EX) && guard--) if (!mmDropOne(d, dayMinutes(d.exercises) > (cap || 75) ? `to fit ${cap || 75} min` : `to keep the day to ${MM_MAX_EX} exercises`)) break;
+    });
     days.forEach(d => {
       let guard = 30;
       while (dayMinutes(d.exercises) > (cap || 75) && guard--){
         const iso = d.exercises.filter(e => isIso(e) && e.rest > 60);
         if (iso.length){ iso.forEach(e => { e.rest = 60; (e.adj = e.adj || []).push(`Rest shortened to 60 s so the day fits ${cap || 75} min.`); }); continue; }
         const wk = muscleSets(all());
-        const c = d.exercises.filter((e, k) => e.reps.length > (e.rest >= 180 && e.reps[0] <= 5 ? Math.min(4, e.reps.length) : k === 0 || e.main ? 3 : 2)).map(e => ({ e, v: wk[(meta(e) || {}).muscle] || 0, iso: isIso(e) }))
-          .filter(x => x.v - 1 >= 10).map(x => Object.assign(x, { f: focusMus.has((meta(x.e) || {}).muscle) ? 1 : 0 }))
+        const c = d.exercises.filter((e, k) => e.reps.length > (MM ? 2 : e.rest >= 180 && e.reps[0] <= 5 ? Math.min(4, e.reps.length) : k === 0 || e.main ? 3 : 2)).map(e => ({ e, v: wk[(meta(e) || {}).muscle] || 0, iso: isIso(e) }))
+          .filter(x => { const m = (meta(x.e) || {}).muscle; return x.v - 1 >= (TARGETED.includes(m) ? tmin(m) : 0); }).map(x => Object.assign(x, { f: focusMus.has((meta(x.e) || {}).muscle) ? 1 : 0 }))
           .sort((x, y) => (x.f - y.f) || (y.iso - x.iso) || (y.v - x.v))[0];
         if (!c) break;
         c.e.reps.pop();
         const pt = partner(d, c.e); if (pt && pt.reps.length > c.e.reps.length) pt.reps.pop(); // keep the pair matched
-        if (!(c.e.adj || []).some(t => t.startsWith("Set cut"))) (c.e.adj = c.e.adj || []).push(`Set cut to fit ${cap || 75} min; ${(meta(c.e) || {}).muscle || "this muscle"} still gets 10+ sets a week.`);
+        if (!(c.e.adj || []).some(t => t.startsWith("Set cut"))) (c.e.adj = c.e.adj || []).push(`Set cut to fit ${cap || 75} min; ${(meta(c.e) || {}).muscle || "this muscle"} still gets ${TARGETED.includes((meta(c.e) || {}).muscle) ? tmin((meta(c.e) || {}).muscle) : 10}+ sets a week.`);
       }
     });
     // supersets: rest only after the pair, 90 s (each muscle also rests during the partner's set)
     days.forEach(d => d.exercises.forEach((e, i) => { const pv = d.exercises[i - 1]; if (pv && pv.ss && !e.ss){ e.rest = 90; } }));
-    if (o.phase === "build"){
-      const LEGM = ["Quads","Hamstrings","Glutes","Calves"], target = m => focusMus.has(m) ? 20 : 16;
+    {
+      const LEGM = ["Quads","Hamstrings","Glutes","Calves"];
+      const target = m => o.prio ? (o.phase === "build" ? tmax(m) : tierOf(m) === "high" ? Math.min(tmax(m), 16) : tmin(m)) : (o.phase === "build" ? (focusMus.has(m) ? 20 : 16) : 0);
       let guard = 120;
       while (guard--){
         const wk = muscleSets(all()), cands = [];
         days.forEach(d => d.exercises.forEach(e => {
           const m = (meta(e) || {}).muscle;
-          if (!m || !TARGETED.includes(m) || e.reps.length >= 4 || (wk[m] || 0) + 1 > target(m) || (o.legs === 1 && LEGM.includes(m))) return;
+          if (!m || !TARGETED.includes(m) || e.reps.length >= maxS || (wk[m] || 0) + 1 > target(m) || (!o.prio && o.legs === 1 && LEGM.includes(m))) return;
           const pt = partner(d, e), grow = x => x.reps.push(x.reps[x.reps.length - 1]);
           grow(e); if (pt) grow(pt);
           const fits = dayMinutes(d.exercises) <= (cap || 75);
@@ -1766,7 +1837,7 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
         if (!cands.length) break;
         cands.sort((a, b) => (b.f - a.f) || (a.v - b.v) || (b.iso - a.iso));
         const c = cands[0];
-        [c.e, c.pt].filter(Boolean).forEach(x => { x.reps.push(x.reps[x.reps.length - 1]); if (!(x.adj || []).some(t => t.startsWith("Build:"))) (x.adj = x.adj || []).push(`Build: extra set. A surplus supports more volume, so the builder adds sets (lowest muscles first) while the day still fits ${cap || 75} min.`); });
+        [c.e, c.pt].filter(Boolean).forEach(x => { x.reps.push(x.reps[x.reps.length - 1]); if (!(x.adj || []).some(t => t.startsWith("Build:") || t.startsWith("Extra set"))) (x.adj = x.adj || []).push(o.phase === "build" ? `Build: extra set. A surplus supports more volume, so the builder adds sets (lowest muscles first) while the day still fits ${cap || 75} min.` : `Extra set to bring ${(meta(x) || {}).muscle.toLowerCase()} up to its ${tierOf((meta(x) || {}).muscle) === "high" ? "high-priority" : "minimum"} target.`); });
       }
     }
     // rep ranges: work up through the range at one weight, then add weight (double progression)
@@ -1774,7 +1845,23 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
     days.forEach(d => d.exercises.forEach(e => { if (e.pyramid) return; const [lo, hi] = rangeFor(e.reps[0]); e.reps = e.reps.map(() => lo); e.top = hi; }));
     const goalTxt = { size:"", strength:" · strength", both:" · strength + size" }[o.goal];
     const phTxt = o.phase && PHASES[o.phase] ? ` · ${({ build:"build", cut:"cut", recomp:"recomp", strength:"strength block" })[o.phase]}` : "";
-    return { label: label0 + phTxt + (o.phase === "strength" && o.goal === "strength" ? "" : goalTxt) + (foci.length ? " · " + foci.map(f => f.toLowerCase()).join(" + ") + " focus" : ""), cap, opts:o, days };
+    // final hygiene: no orphaned superset flags or 0 s rests; a stretched-position curl whenever biceps aren't on maintenance
+    days.forEach(d => d.exercises.forEach((e, i, L) => {
+      if (e.ss && !L[i + 1]) e.ss = false;
+      const pv = L[i - 1], m = meta(e) || {};
+      if (!e.ss && !(pv && pv.ss) && (e.rest || 0) < 60) e.rest = m.warm ? 120 : 75;
+    }));
+    if (tierOf("Biceps") !== "maint" && !days.some(d => d.exercises.some(e => /incline|bayesian/i.test(e.name) && (meta(e) || {}).muscle === "Biceps"))) {
+      const hit = days.flatMap(d => d.exercises).find(e => (meta(e) || {}).muscle === "Biceps" && !/hammer/i.test(e.name));
+      if (hit) { const was = hit.name; hit.name = /cable/i.test(was) ? "Bayesian Cable Curl" : "Incline Dumbbell Curl"; (hit.adj = hit.adj || []).push(`Swapped in for ${was}: a stretched-position curl (biceps long head under stretch), which some studies show grows more.`); }
+    }
+    // Min-Max last-set technique: lengthened partials on moves that load the stretched position safely (the program uses them on
+    // pulldowns/pull-ups, leg curls, leg extensions and calf raises; flies, overhead triceps and stretched curls fit the same logic)
+    const LLP_PATS = ["vertical-pull","lat-iso","leg-curl","leg-ext","calf-straight","calf-bent","chest-fly","tri-overhead","curl-stretch","lateral-raise"];
+    if (MM) days.forEach(d => d.exercises.forEach(e => { const m = meta(e); if (m && LLP_PATS.includes(patternOf(m).pat) && (["Cable","Machine"].includes(m.equip) || m.bw || ["curl-stretch","lateral-raise"].includes(patternOf(m).pat))) {
+      e.llp = true; e.note = "Last set: lengthened partials. When you can't do another full rep, keep going with half reps in the stretched half of the movement until those fail too. Log the full reps.";
+      (e.adj = e.adj || []).push("Lengthened partials on the last set (Min-Max): extra reps in the stretched position, where growth stimulus appears highest, without adding a set."); } }));
+    return { label: label0 + phTxt + (MM ? " · Min-Max" : "") + (o.phase === "strength" && o.goal === "strength" ? "" : goalTxt) + (foci.length ? " · " + foci.map(f => f.toLowerCase()).join(" + ") + (o.prio ? " priority" : " focus") : ""), cap, opts:o, days };
   }
   function trimOptions(dd, cap){
     const out = [], mins = dayMinutes(dd.exercises);
@@ -1806,7 +1893,9 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
     if (!draft || !buildRest) buildRest = plan.rest.slice(); // rest days for the routine being built (applied on Start)
     const open = 7 - buildRest.length;
     const n = Math.max(2, Math.min(6, (draft && draft.n) || Math.min(open, program.days.length || 4, 6)));
-    const keepOpts = draft && draft.opts ? draft.opts : { legs: plan.legDays || 2, goal: phaseOf() ? PHASES[plan.phase.goal].emph : "size", focus:[], phase: phaseOf() ? plan.phase.goal : null };
+    const keepOpts = draft && draft.opts ? draft.opts : { legs: plan.legDays || 2, goal: phaseOf() ? PHASES[plan.phase.goal].emph : "size", focus:[], phase: phaseOf() ? plan.phase.goal : null,
+      prio: Object.assign(Object.fromEntries(TARGETED.map(m => [m, "normal"])), plan.legDays === 1 ? { Quads:"maint", Hamstrings:"maint", Glutes:"maint", Calves:"maint" } : {}, plan.prio || {}),
+      adj: plan.volAdj || null };
     if (!draft || draft.n !== n) { draft = Object.assign(makeDraft(n, (draft && draft.cap) || CAP_DEFAULT, keepOpts), { n }); }
     const remake = o => { buildSwap = null; buildOpen = null; buildWhy = null; buildAdd = null; draft = Object.assign(makeDraft(n, draft.cap, Object.assign({}, draft.opts, o)), { n }); renderBuild(); };
     const top = document.createElement("div"); top.className = "planhead";
@@ -1815,10 +1904,11 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
     el.appendChild(top);
     const opts = document.createElement("div"); opts.className = "panel";
     opts.innerHTML = `<div class="hh2"><b>Your goal</b><span class="sub">shapes the whole routine</span></div><div class="chips phbchips"></div><p class="sub phbnote"></p>
-      <div class="hh2"><b>Lifting days per week</b><span class="sub">${open} open with these rest days</span></div><div class="chips dchips"></div><div class="hh2"><b>Time per session</b><span class="sub">60 is the default; 75 when you have time</span></div><div class="chips tchips"></div>
+      <div class="hh2"><b>Lifting days per week</b><span class="sub">${open} open with these rest days</span></div><div class="chips dchips"></div><div class="hh2"><b>Time per session</b><span class="sub">60 is the default; 45 suits Min-Max; 75 when you have time</span></div><div class="chips tchips"></div>
+      <div class="hh2"><b>Volume style</b><span class="sub" id="styHint"></span></div><div class="chips stchips"></div><p class="sub" id="styNote"></p>
       <div class="hh2"><b>Training emphasis</b><span class="sub" id="goalHint"></span></div><div class="chips gchips"></div>
-      <div class="hh2"><b>Focus muscles</b><span class="sub">pick any; 1–2 works best</span></div><div class="chips fchips"></div>
-      <div class="hh2"><b>Leg days per week</b><span class="sub" id="legHint"></span></div><div class="chips lchips"></div>`;
+      <div class="hh2"><b>Muscle priorities</b><span class="sub" id="prHint"></span></div>
+      <div class="chips prpre"></div><div class="prgrid"></div><p class="sub" id="legHint"></p>`;
     [2,3,4,5,6].forEach(k => { const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = k; b.setAttribute("aria-pressed", String(k === n)); b.onclick = () => { buildSwap = null; draft = Object.assign(makeDraft(k, draft.cap, Object.assign({}, draft.opts, { split:0 })), { n:k }); renderBuild(); }; opts.querySelector(".dchips").appendChild(b); });
     // rest days: pick them here; they're applied when you start the routine
     {
@@ -1835,11 +1925,11 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
       });
       opts.querySelector(".dchips").after(rd);
     }
-    [60,75].forEach(c => { const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = c + " min"; b.setAttribute("aria-pressed", String(c === draft.cap)); b.onclick = () => { buildSwap = null; draft = Object.assign(makeDraft(n, c, draft.opts), { n }); renderBuild(); }; opts.querySelector(".tchips").appendChild(b); });
+    [45,60,75].forEach(c => { const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = c + " min"; b.setAttribute("aria-pressed", String(c === draft.cap)); b.onclick = () => { buildSwap = null; draft = Object.assign(makeDraft(n, c, draft.opts), { n }); renderBuild(); }; opts.querySelector(".tchips").appendChild(b); });
     {
       const SHAPE = {
         build: "More volume: sets are added (lowest muscles first, focus muscles up to 20) while each day fits your time. Pair with a small calorie surplus.",
-        cut: "Higher intensity, less volume: heavy first lift, other compound lifts at 6–8 reps, and each muscle held near 10–14 sets since recovery is lower in a deficit. Shorter days.",
+        cut: "Cut: Auto switches to Min-Max (2 sets per exercise to failure, 6–10 sets a week) to keep muscle with less recovery. Choose Higher volume below to instead keep 10–12 sets with heavier compound lifts.",
         recomp: "Standard routine (10–20 sets, size emphasis). Eat near maintenance; expect slower gains than a build.",
         strength: "Strength emphasis: heavy 4×5 / 3×5 main lifts with 3 min rest. These days run long, so 75 min fits best."
       };
@@ -1853,24 +1943,38 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
     }
     const chipRow = (sel, items, cur, on) => items.forEach(([v, label]) => { const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = label; b.setAttribute("aria-pressed", String(v === cur)); b.onclick = () => on(v); opts.querySelector(sel).appendChild(b); });
     chipRow(".gchips", [["size","Size"],["strength","Strength"],["both","Both"]], draft.opts.goal, v => remake({ goal:v }));
-    { // focus: multi-select; "None" clears
-      const cur = Array.isArray(draft.opts.focus) ? draft.opts.focus : draft.opts.focus && draft.opts.focus !== "None" ? [draft.opts.focus] : [];
-      ["None","Chest","Back","Delts","Arms","Legs","Glutes"].forEach(x => {
-        const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = x;
-        b.setAttribute("aria-pressed", String(x === "None" ? !cur.length : cur.includes(x)));
-        b.onclick = () => {
-          if (x === "None") return remake({ focus:[] });
-          const next = cur.includes(x) ? cur.filter(f => f !== x) : cur.concat(x);
-          if (next.length > 3){ toast("Up to 3 focus muscles. Each one takes time and sets from the rest."); return; }
-          remake({ focus: next });
-        };
-        opts.querySelector(".fchips").appendChild(b);
-      });
+    {
+      const cur = draft.opts.style || "auto", res = draft.opts.styleR, autoR = styleAuto(draft.opts.phase, draft.cap);
+      chipRow(".stchips", [["auto", `Auto (${autoR === "minmax" ? "Min-Max" : "higher volume"})`], ["minmax","Min-Max"], ["volume","Higher volume"]], cur, v => remake({ style:v }));
+      opts.querySelector("#styHint").textContent = cur === "auto" ? "Auto: Min-Max when cutting or at 45 min" : "";
+      opts.querySelector("#styNote").textContent = res === "minmax"
+        ? "Min-Max (Jeff Nippard): 1–2 sets per exercise, nearly all to failure, about 6–10 sets per muscle a week (4–6 for hamstrings and calves). Made for cutting, where the goal is keeping muscle and recovery is limited, and for short sessions. A 2011 study found a third of the training volume kept muscle gained earlier for 32 weeks."
+        : "Higher volume (like Pure Bodybuilding): about 3 sets per exercise and 10–20 sets per muscle a week. More sets keep adding growth, with smaller gains per set, so this suits a build when food and recovery support it.";
+      const t3 = ["maint","normal","high"].map(k => tierRange(Object.assign({}, draft.opts, { prio: { Chest:k }, adj:null }), "Chest").join("–"));
+      opts.querySelector("#prHint").textContent = `sets per week: maint. ${t3[0]} · normal ${t3[1]} · high ${t3[2]}`;
     }
-    chipRow(".lchips", [[1,"1"],[2,"2"]], draft.opts.legs, v => remake({ legs:v, split:0 }));
+    { // priorities: one row per muscle
+      const pr = draft.opts.prio || {}, ms = muscleSets(draft.days.flatMap(d => d.exercises)), grid = opts.querySelector(".prgrid");
+      const setP = (m, t) => remake({ prio: Object.assign({}, pr, { [m]: t }), split:0 });
+      TARGETED.forEach(m => {
+        const t = pr[m] || "normal", [lo, hi] = tierRange(draft.opts, m), v = Math.round((ms[m] || 0) * 2) / 2;
+        const row = document.createElement("div"); row.className = "prrow";
+        row.innerHTML = `<span>${({ "Side Delts":"Side delts", "Rear Delts":"Rear delts" })[m] || m}<small class="${onTarget(draft.opts, m, v) ? "" : "warnc"}">${v} sets · aim ${lo}–${hi}${draft.opts.adj && draft.opts.adj[m] ? ` (${draft.opts.adj[m] > 0 ? "+" : ""}${draft.opts.adj[m]} from review)` : ""}</small></span><span class="seg"></span>`;
+        ["maint","normal","high"].forEach(k => { const b = document.createElement("button"); b.type = "button"; b.textContent = TIER_LABEL[k]; b.setAttribute("aria-pressed", String(t === k)); b.onclick = () => setP(m, k); row.querySelector(".seg").appendChild(b); });
+        grid.appendChild(row);
+      });
+      const pre = opts.querySelector(".prpre");
+      [["Balanced", {}], ["Legs on maint.", { Quads:"maint", Hamstrings:"maint", Glutes:"maint", Calves:"maint" }], ["Upper-body priority", { Chest:"high", Back:"high", Quads:"maint", Hamstrings:"maint", Glutes:"maint", Calves:"maint" }]].forEach(([label, over]) => {
+        const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = label;
+        b.onclick = () => remake({ prio: Object.assign(Object.fromEntries(TARGETED.map(m => [m, "normal"])), over), split:0 });
+        pre.appendChild(b);
+      });
+      const highs = TARGETED.filter(m => pr[m] === "high");
+      if (highs.length > 3) opts.querySelector("#legHint").insertAdjacentHTML("beforebegin", `<p class="sub warnc">${highs.length} high-priority muscles: everything can't be a priority in ${draft.cap} min. 1–3 works best.</p>`);
+    }
     const dph = draft.opts.phase && PHASES[draft.opts.phase];
     opts.querySelector("#goalHint").textContent = (dph && dph.emph === draft.opts.goal ? "recommended for your goal · " : dph ? `your goal suggests ${({ size:"Size", strength:"Strength", both:"Both" })[dph.emph]} · ` : "") + { size:"8–15 reps, most growth per set", strength:"heavy 4×5 / 3×5 main lifts, 3 min rest; 75 min fits best", both:"first lift of each day 3×5 heavy, rest for size" }[draft.opts.goal];
-    opts.querySelector("#legHint").textContent = draft.opts.legs === 1 ? "legs keep ~8–10 sets/week: maintain + slow growth" : "legs twice a week: faster leg growth";
+    opts.querySelector("#legHint").textContent = draft.opts.legs === 1 ? "Quads, hamstrings and glutes on maintenance → 1 leg day a week." : "Legs at normal or high → 2 leg days a week (set quads, hamstrings and glutes to Maint. for 1).";
     el.appendChild(opts);
 
     // routine options for this many days: compare them side by side, tap to switch
@@ -1881,12 +1985,11 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
       list.forEach(([label, keys, blurb], i) => {
         const dr = i === (draft.opts.split || 0) ? draft : makeDraft(n, draft.cap, Object.assign({}, draft.opts, { split:i }));
         const ms = muscleSets(dr.days.flatMap(d => d.exercises));
-        const pool = draft.opts.legs === 1 ? TARGETED.filter(m => !["Quads","Hamstrings","Glutes","Adductors","Calves"].includes(m)) : TARGETED;
-        const inRange = pool.filter(m => (ms[m] || 0) >= 9.5 && (ms[m] || 0) <= 20.5).length;
+        const pool = TARGETED, inRange = pool.filter(m => onTarget(draft.opts, m, ms[m] || 0)).length;
         const mins = dr.days.map(d => dayMinutes(d.exercises)), avg = Math.round(mins.reduce((a, b) => a + b, 0) / mins.length), mx = Math.max(...mins);
         const b = document.createElement("button"); b.type = "button"; b.className = "ropt";
         b.setAttribute("aria-pressed", String(i === (draft.opts.split || 0)));
-        b.innerHTML = `<b>${esc(label)}</b><small>${esc(blurb)}</small><small>~${avg} min/day${mx > draft.cap ? ` (longest ${mx})` : ""} · ${inRange}/${pool.length} ${draft.opts.legs === 1 ? "upper-body " : ""}muscles at 10–20 sets</small>`;
+        b.innerHTML = `<b>${esc(label)}</b><small>${esc(blurb)}</small><small>~${avg} min/day${mx > draft.cap ? ` (longest ${mx})` : ""} · ${inRange}/${pool.length} muscles on target</small>`;
         b.onclick = () => remake({ split:i });
         op.appendChild(b);
       });
@@ -1977,9 +2080,9 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
             const wk = muscleSets(draft.days.flatMap(x => x.exercises)), pats = new Set(dd.exercises.map(e => { const m = meta(e); return m ? patternOf(m).pat : ""; }));
             // leg work only on leg days, and not at all when you chose 1 leg day
             const LEGM = ["Quads","Hamstrings","Glutes","Calves"], legDay = dd.exercises.some(e => ["Quads","Hamstrings"].includes((meta(e) || {}).muscle));
-            const lows = TARGETED.filter(m => (wk[m] || 0) < 10 && (!LEGM.includes(m) || (legDay && draft.opts.legs !== 1))).sort((a, b) => (wk[a] || 0) - (wk[b] || 0));
+            const lows = TARGETED.filter(m => (wk[m] || 0) < tierRange(draft.opts, m)[0] - 0.5 && (!LEGM.includes(m) || legDay)).sort((a, b) => (wk[a] || 0) - (wk[b] || 0));
             items = [];
-            lows.forEach(m => BANK.filter(b => b.muscle === m && !have.has(norm(b.name)) && !pats.has(patternOf(b).pat)).slice(0, 2).forEach(b => items.push({ b, why: `${m.toLowerCase()} is at ${Math.round((wk[m] || 0) * 2) / 2} sets/week` })));
+            lows.forEach(m => BANK.filter(b => b.muscle === m && !have.has(norm(b.name)) && !pats.has(patternOf(b).pat)).slice(0, 2).forEach(b => items.push({ b, why: `${m.toLowerCase()} is at ${Math.round((wk[m] || 0) * 2) / 2} of ${tierRange(draft.opts, m)[0]}+ sets/week` })));
             if (!items.length){
               // nothing under target: offer more of what this day already trains, for muscles with room below 20
               const dayM = [...new Set(dd.exercises.map(e => (meta(e) || {}).muscle).filter(m => TARGETED.includes(m) && (wk[m] || 0) < 18))].sort((a, b) => (wk[a] || 0) - (wk[b] || 0));
@@ -1987,8 +2090,8 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
             }
             items = items.slice(0, 6);
           }
-          listEl.innerHTML = items.length ? "" : `<small class="sub">${words.length ? "No match in the library." : "Every muscle is already at 10+ sets a week. Search to add anything."}</small>`;
-          if (!words.length && items.length) listEl.insertAdjacentHTML("beforeend", `<small class="sub">${items[0].more ? "Every muscle is at 10+ sets. Ideas for this day:" : "Suggested for muscles under 10 sets a week:"}</small>`);
+          listEl.innerHTML = items.length ? "" : `<small class="sub">${words.length ? "No match in the library." : "Every muscle is on target. Search to add anything."}</small>`;
+          if (!words.length && items.length) listEl.insertAdjacentHTML("beforeend", `<small class="sub">${items[0].more ? "Every muscle is on target. Ideas for this day:" : "Suggested for muscles under their target:"}</small>`);
           items.forEach(({ b, why }) => { const bt = document.createElement("button"); bt.type = "button"; bt.className = "pick";
             const plus = Math.round(exMinutes({ name: b.name, reps: [b.reps[0], b.reps[0], b.reps[0]], rest: b.rest }, false) + warmCount({ name: b.name }, dd.exercises) * 1.25);
             bt.innerHTML = `<span>${esc(b.name)}</span><small>${esc(why)} · +~${plus} min</small>`; bt.onclick = () => addIt(b); listEl.appendChild(bt); });
@@ -2007,9 +2110,9 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
     {
       const stat = ds => {
         const mins = ds.map(d => dayMinutes(d.exercises)), ex = ds.flatMap(d => d.exercises), ms = muscleSets(ex);
-        const pool = draft.opts.legs === 1 ? TARGETED.filter(m => !["Quads","Hamstrings","Glutes","Calves"].includes(m)) : TARGETED;
+        const pool = TARGETED;
         return { days: ds.length, avg: Math.round(mins.reduce((a, b) => a + b, 0) / Math.max(1, mins.length)), max: Math.max(0, ...mins), week: mins.reduce((a, b) => a + b, 0),
-          sets: Math.round(ex.reduce((a, e) => a + e.reps.length, 0)), exs: new Set(ex.map(e => norm(e.name))).size, inR: pool.filter(m => (ms[m] || 0) >= 9.5 && (ms[m] || 0) <= 20.5).length, of: pool.length };
+          sets: Math.round(ex.reduce((a, e) => a + e.reps.length, 0)), exs: new Set(ex.map(e => norm(e.name))).size, inR: pool.filter(m => onTarget(draft.opts, m, ms[m] || 0)).length, of: pool.length };
       };
       const A = stat(program.days), B = stat(draft.days);
       const nowNames = new Set(program.days.flatMap(d => d.exercises.map(e => norm(e.name))));
@@ -2019,25 +2122,26 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
       const hm = m => m >= 60 ? `${Math.floor(m / 60)}h ${m % 60}m` : `${m}m`, id = x => String(x), mn = x => `${x} min`;
       // verdict
       const ma = muscleSets(program.days.flatMap(d => d.exercises)), mb = muscleSets(draft.days.flatMap(d => d.exercises));
-      const once = draft.opts.legs === 1 ? ["Quads","Hamstrings","Glutes","Calves"] : [];
-      const inR = v => v >= 9.5 && v <= 20.5, r1 = x => Math.round(x * 2) / 2, lc = m => m.toLowerCase();
+      const once = [];
+      const r1 = x => Math.round(x * 2) / 2, lc = m => m.toLowerCase();
       const freq = ds => { const c = {}; ds.forEach(d => dayHits(d).forEach(m => c[m] = (c[m] || 0) + 1)); return c; };
       const fa = freq(program.days), fb = freq(draft.days);
       const good = [], bad = [], goalL = [];
       if (B.avg <= A.avg - 3) good.push(`Shorter sessions: ~${B.avg} min vs ~${A.avg}`); else if (B.avg >= A.avg + 3) bad.push(`Longer sessions: ~${B.avg} min vs ~${A.avg}`);
       if (B.max > draft.cap) bad.push(`Longest day ~${B.max} min, over your ${draft.cap}-min target`); else if (A.max > draft.cap) good.push(`Every day fits ${draft.cap} min (now the longest is ~${A.max})`);
       if (B.days > A.days) bad.push(`${B.days - A.days} more gym day${B.days - A.days > 1 ? "s" : ""} a week`); else if (B.days < A.days) good.push(`${A.days - B.days} fewer gym day${A.days - B.days > 1 ? "s" : ""} a week`);
-      const into = TARGETED.filter(m => !once.includes(m) && !inR(ma[m] || 0) && inR(mb[m] || 0)), outof = TARGETED.filter(m => !once.includes(m) && inR(ma[m] || 0) && !inR(mb[m] || 0));
-      if (into.length) good.push(`Into the 10–20 range: ${into.map(m => `${lc(m)} (${r1(ma[m] || 0)} → ${r1(mb[m] || 0)})`).join(", ")}`);
-      if (outof.length) bad.push(`Out of the 10–20 range: ${outof.map(m => `${lc(m)} (${r1(ma[m] || 0)} → ${r1(mb[m] || 0)})`).join(", ")}`);
-      const twiceA = TARGETED.filter(m => !once.includes(m) && (fa[m] || 0) >= 2).length, twiceB = TARGETED.filter(m => !once.includes(m) && (fb[m] || 0) >= 2).length;
+      const ok = (m, v) => onTarget(draft.opts, m, v), rg = m => tierRange(draft.opts, m).join("–");
+      const into = TARGETED.filter(m => !ok(m, ma[m] || 0) && ok(m, mb[m] || 0)), outof = TARGETED.filter(m => ok(m, ma[m] || 0) && !ok(m, mb[m] || 0));
+      if (into.length) good.push(`Now on target: ${into.map(m => `${lc(m)} ${r1(ma[m] || 0)} → ${r1(mb[m] || 0)} (aim ${rg(m)})`).join(", ")}`);
+      if (outof.length) bad.push(`Below target: ${outof.map(m => `${lc(m)} ${r1(ma[m] || 0)} → ${r1(mb[m] || 0)} (aim ${rg(m)})`).join(", ")}`);
+      const notMaint = TARGETED.filter(m => (draft.opts.prio || {})[m] !== "maint");
+      const twiceA = notMaint.filter(m => (fa[m] || 0) >= 2).length, twiceB = notMaint.filter(m => (fb[m] || 0) >= 2).length;
       if (twiceB > twiceA) good.push(`More muscles trained twice a week (${twiceB} vs ${twiceA})`); else if (twiceB < twiceA) bad.push(`Fewer muscles trained twice a week (${twiceB} vs ${twiceA})`);
       const newEx = B.exs - kept;
       if (newEx >= 6) bad.push(`${newEx} exercises that aren't in your current routine: expect a couple of weeks finding working weights`);
       // your goals
       if (draft.opts.phase && PHASES[draft.opts.phase]){ const P = PHASES[draft.opts.phase]; goalL.push(draft.opts.goal === P.emph ? `${P.label}: ${({ size:"Size", strength:"Strength", both:"Both" })[draft.opts.goal]} emphasis matches your goal` : `${P.label}: your goal suggests ${({ size:"Size", strength:"Strength", both:"Both" })[P.emph]} emphasis${draft.opts.phase === "cut" ? " (heavy work helps keep strength and muscle in a deficit)" : ""}`); }
-      const foci = (Array.isArray(draft.opts.focus) ? draft.opts.focus : []).filter(f => FOCUS[f]);
-      foci.forEach(f => { const m = FOCUS[f].muscle; goalL.push(`${f} focus: ${lc(m)} ${r1(ma[m] || 0)} → ${r1(mb[m] || 0)} sets/week${FOCUS[f].also ? `, ${lc(FOCUS[f].also)} ${r1(ma[FOCUS[f].also] || 0)} → ${r1(mb[FOCUS[f].also] || 0)}` : ""}`); });
+      TARGETED.filter(m => (draft.opts.prio || {})[m] === "high").forEach(m => goalL.push(`High priority ${lc(m)}: ${r1(ma[m] || 0)} → ${r1(mb[m] || 0)} sets/week (aim ${rg(m)})`));
       const heavy = ds => ds.flatMap(d => d.exercises).filter(e => e.reps[0] <= 6 && ((meta(e) || {}).warm || (meta(e) || {}).bw)).length;
       if (draft.opts.goal !== "size") goalL.push(`Heavy (≤6 rep) lift slots per week: ${heavy(program.days)} → ${heavy(draft.days)}`);
       (plan.goals || []).forEach(g => {
@@ -2058,17 +2162,25 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
         ${row("Longest session", A.max, B.max, mn, "down")}
         ${row("Time per week", A.week, B.week, x => (x < 0 ? "-" : "") + hm(Math.abs(x)), "down")}
         ${row("Hard sets per week", A.sets, B.sets, id, "up")}
-        ${row(`Muscles at 10–20 sets (of ${B.of})`, A.inR, B.inR, id, "up")}
+        ${row(`Muscles on target (of ${B.of})`, A.inR, B.inR, id, "up")}
         ${row("Different exercises", A.exs, B.exs, id, "")}
         </tbody></table><p class="sub">${kept} of the new routine's exercises are ones you already do; they keep their history and weight suggestions.</p>
-        <div class="hh2" style="margin-top:10px"><b>Hard sets per muscle, per week</b><span class="sub"><span class="lg lgnow"></span>now → <span class="lg lgnew"></span>new · shaded = 10–20</span></div>
-        ${cmpBars(muscleSets(program.days.flatMap(d => d.exercises)), muscleSets(draft.days.flatMap(d => d.exercises)), draft.opts.legs === 1 ? ["Quads","Hamstrings","Glutes","Calves"] : [])}`;
+        <div class="hh2" style="margin-top:10px"><b>Hard sets per muscle, per week</b><span class="sub"><span class="lg lgnow"></span>now → <span class="lg lgnew"></span>new · shaded = each muscle's target</span></div>
+        ${cmpBars(muscleSets(program.days.flatMap(d => d.exercises)), muscleSets(draft.days.flatMap(d => d.exercises)), draft.opts)}`;
       el.appendChild(cp);
+    }
+    { // evidence check + benchmark for the draft
+      const ev = document.createElement("div"); ev.className = "panel";
+      ev.innerHTML = evidenceHTML(evidenceCheck(draft.days, draft.opts, draft.cap));
+      el.appendChild(ev);
+      const bm = document.createElement("div"); bm.className = "panel";
+      bm.innerHTML = benchHTML(draft.days, n, draft.opts);
+      el.appendChild(bm);
     }
 
 
     const go = document.createElement("div"); go.className = "panel";
-    go.innerHTML = `<p class="sub">Built on research: 10–20 hard sets per muscle per week (helper muscles count half) · 6–20 reps, sets close to failure · each muscle at least twice a week${draft.opts.legs === 1 ? " (legs once, as you chose)" : ""} · no more than ~10 sets for one muscle in one session · stretched-position picks (seated leg curl, overhead extension, incline curl) · compound lifts first, 2–3 min rest on them. Rules of thumb (not directly tested): 48 h before a muscle is trained again, add weight once all reps are hit. Exercises you already do keep their history and weight suggestions. Swap any exercise after you start, with Edit on its card.</p><button type="button" class="btnp">Start this routine</button><p class="sub">Your current program is saved; switch back anytime from Your week. This starts a new training block: after its deload week (about 6 weeks in) you'll get a review of how it went.</p>`;
+    go.innerHTML = `<p class="sub">Built on research: weekly hard sets per muscle set by your priorities (maintenance 4–8, normal 10–14, high 14–20; helper muscles count half) · 6–20 reps, sets close to failure · each muscle at least twice a week${draft.opts.legs === 1 ? " (legs once, as you chose)" : ""} · no more than ~10 sets for one muscle in one session · stretched-position picks (seated leg curl, overhead extension, incline curl) · compound lifts first, 2–3 min rest on them. Rules of thumb (not directly tested): 48 h before a muscle is trained again, add weight once all reps are hit. Exercises you already do keep their history and weight suggestions. Swap any exercise after you start, with Edit on its card.</p><button type="button" class="btnp">Start this routine</button><p class="sub">Your current program is saved; switch back anytime from Your week. This starts a new training block: after its deload week (about 6 weeks in) you'll get a review of how it went.</p>`;
     go.querySelector("button").onclick = () => {
       if (n > 7 - buildRest.length){ toast(`Free up ${n - (7 - buildRest.length)} more rest day first`); return; }
       plan.rest = buildRest.slice(); buildRest = null;
@@ -2076,6 +2188,9 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
       program = { name: draft.label, days: draft.days.map(d => ({ id: d.id, name: d.name, exercises: clone(d.exercises) })) };
       plan.trial = { start: today(), name: draft.label }; plan.blockStart = today();
       plan.legDays = draft.opts ? draft.opts.legs : 2;
+      if (draft.opts && draft.opts.prio) plan.prio = Object.assign({}, draft.opts.prio);
+      plan.style = (draft.opts && draft.opts.styleR) || "volume";
+      plan.volAdj = null; // review adjustments are now built into the routine
       const newPh = draft.opts && draft.opts.phase;
       if (newPh && (!phaseOf() || plan.phase.goal !== newPh)) plan.phase = { goal:newPh, start: today() };
       else if (!newPh) plan.phase = null;
@@ -2087,21 +2202,139 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
     };
     el.appendChild(go);
   }
+  // Benchmarks: two programs by Jeff Nippard, counted with this app's rules (direct sets + half for helper muscles).
+  // Pure Bodybuilding (PBP, week 1): higher-volume, 3 versions; weak-point slots excluded (wp). Min-Max 1 (week 2): low volume, 1–2 sets to failure.
+  const BENCH = {"UpperLower": {"label": "PBP Upper/Lower (5 days)", "sets": {"Side Delts": 7.5, "Back": 15.0, "Chest": 10.0, "Triceps": 12.0, "Front Delts": 6.5, "Biceps": 11.5, "Rear Delts": 7.5, "Hamstrings": 8.0, "Adductors": 9.0, "Quads": 12.0, "Glutes": 4.0, "Calves": 6.0, "Core": 3.0}, "freq": {"Side Delts": 2.0, "Back": 2.0, "Chest": 2.0, "Triceps": 3.0, "Front Delts": 2.0, "Hamstrings": 2.0, "Adductors": 2.0, "Quads": 2.0, "Calves": 2.0, "Biceps": 2.0, "Rear Delts": 1.0, "Glutes": 1.0, "Core": 1.0}, "sps": 17.2, "eps": 6.0, "spe": 2.9, "wp": 5.0}, "Full_Body": {"label": "PBP Full Body (5 days)", "sets": {"Back": 12.0, "Chest": 10.0, "Triceps": 12.0, "Front Delts": 6.5, "Adductors": 6.0, "Quads": 9.0, "Glutes": 4.0, "Rear Delts": 10.5, "Core": 6.0, "Side Delts": 4.5, "Hamstrings": 7.0, "Biceps": 12.5, "Traps": 3.0, "Calves": 6.0}, "freq": {"Back": 4.0, "Chest": 3.0, "Adductors": 1.0, "Quads": 3.0, "Rear Delts": 3.0, "Core": 2.0, "Front Delts": 2.0, "Triceps": 3.0, "Side Delts": 1.0, "Hamstrings": 3.0, "Biceps": 3.0, "Traps": 1.0, "Calves": 2.0}, "sps": 16.6, "eps": 5.8, "spe": 2.9, "wp": 5.0}, "PPL": {"label": "PBP Push/Pull/Legs (8 days per 10)", "sets": {"Back": 10.5, "Hamstrings": 7.0, "Glutes": 4.0, "Biceps": 14.5, "Rear Delts": 7.5, "Side Delts": 5.0, "Chest": 8.5, "Triceps": 16.0, "Front Delts": 4.5, "Core": 8.5, "Adductors": 7.0, "Quads": 10.0, "Calves": 4.0, "Traps": 2.0}, "freq": {"Back": 1.4, "Hamstrings": 2.8, "Biceps": 2.8, "Rear Delts": 1.4, "Side Delts": 1.4, "Chest": 1.4, "Triceps": 2.8, "Front Delts": 1.4, "Core": 2.8, "Adductors": 1.4, "Quads": 1.4, "Calves": 1.4, "Traps": 0.7, "Glutes": 0.7}, "sps": 15.9, "eps": 5.6, "spe": 2.8, "wp": 7.0}, "MinMax": {"label": "Min-Max (5 days)", "sets": {"Chest": 6.0, "Triceps": 8.0, "Front Delts": 2.0, "Side Delts": 6.0, "Back": 6.0, "Biceps": 9.0, "Rear Delts": 4.0, "Traps": 3.0, "Core": 4.0, "Hamstrings": 4.0, "Quads": 8.0, "Glutes": 6.0, "Adductors": 2.0, "Calves": 4.0, "Forearms": 4.0}, "freq": {"Chest": 2, "Triceps": 2, "Side Delts": 3, "Back": 2, "Biceps": 3, "Traps": 1, "Core": 2, "Hamstrings": 2, "Quads": 2, "Glutes": 2, "Calves": 2, "Rear Delts": 1, "Forearms": 1}, "sps": 12.2, "eps": 6.8, "spe": 1.8, "wp": 0}};
+  // Evidence check: explicit, sourced rules a hypertrophy routine should meet
+  function evidenceCheck(days, o, cap){
+    const ex = days.flatMap(d => d.exercises), ms = muscleSets(ex), out = [];
+    const tgt = TARGETED.filter(m => !((o && o.prio && o.prio[m]) === "maint"));
+    const r1 = x => Math.round(x * 2) / 2, lc = m => m.toLowerCase();
+    const add = (ok, rule, tier, src, detail) => out.push({ ok, rule, tier, src, detail });
+    // 1 volume
+    const miss = TARGETED.filter(m => !onTarget(o, m, ms[m] || 0));
+    const mm = styleOf(o) === "minmax";
+    add(!miss.length, `Weekly hard sets per muscle hit each muscle's target${mm ? " (Min-Max ranges)" : ""}`, "Strong",
+      mm ? "Min-Max ranges (6–10 sets, sets to failure): Bickel 2011 kept size for 32 weeks on a third of the volume; Pelland 2024 shows each extra set adds less, so low volume keeps most of the benefit. Pure growth still rises with more sets (ACSM 2026: ~10+)."
+         : "Dose-response meta-regressions (Pelland et al. 2024/2025); ACSM 2026 position stand: ~10+ sets per muscle per week for growth",
+      miss.length ? miss.map(m => `${lc(m)} ${r1(ms[m] || 0)} (aim ${tierRange(o, m).join("–")})`).join(", ") : TARGETED.map(m => `${lc(m)} ${r1(ms[m] || 0)}`).join(", "));
+    // 2 frequency
+    const perDay = days.map(d => muscleSets(d.exercises));
+    const freqMiss = tgt.filter(m => perDay.filter(x => (x[m] || 0) >= 2).length < 2);
+    add(!freqMiss.length, "Each non-maintenance muscle trained on 2+ days a week", "Moderate",
+      "ACSM 2026: train each major muscle group at least twice a week; with sets equal, frequency mainly spreads the volume (Pelland 2024)",
+      freqMiss.length ? "once a week: " + freqMiss.map(lc).join(", ") : "all covered");
+    // 3 per-session volume
+    const heavySess = [];
+    days.forEach((d, i) => Object.entries(perDay[i]).forEach(([m, v]) => { if (TARGETED.includes(m) && v > 10.5) heavySess.push(`${lc(m)} ${r1(v)} on ${d.name.split(" · ")[0]}`); }));
+    add(!heavySess.length, "No more than ~10 sets for one muscle in one session", "Moderate",
+      "Per-session meta-regression (Remmert, Pelland et al. 2025 preprint): returns per session diminish as sets pile up",
+      heavySess.length ? heavySess.join(", ") : "max per session " + r1(Math.max(0, ...perDay.flatMap(x => TARGETED.map(m => x[m] || 0)))));
+    // 4 movement coverage
+    const pats = m => new Set(ex.filter(e => (meta(e) || {}).muscle === m).map(e => patternOf(meta(e)).pat));
+    const need = { Chest:[["flat-press","incline-press","decline-press"],["chest-fly"]], Back:[["vertical-pull","lat-iso"],["row"]], "Side Delts":[["lateral-raise"]], "Rear Delts":[["rear-delt"]],
+      Biceps:[["curl","curl-stretch","curl-short","hammer"]], Triceps:[["tri-overhead"],["pushdown","tri-press"]], Quads:[["squat","lunge"],["leg-ext"]], Hamstrings:[["hinge"],["leg-curl"]],
+      Glutes:[["hip-thrust","abduction","glute"]], Calves:[["calf-straight"],["calf-bent"]] };
+    const names = { "flat-press":"press", "chest-fly":"fly", "vertical-pull":"vertical pull", row:"row", "lateral-raise":"lateral raise", "rear-delt":"rear-delt fly", curl:"curl", "tri-overhead":"overhead extension", pushdown:"pushdown/press", squat:"squat pattern", "leg-ext":"leg extension", hinge:"hinge", "leg-curl":"leg curl", "hip-thrust":"glute exercise", "calf-straight":"straight-knee calf", "calf-bent":"bent-knee calf" };
+    const gaps = [];
+    tgt.forEach(m => { const have = pats(m); (need[m] || []).forEach(alts => { if (!alts.some(a => have.has(a))) gaps.push(`${lc(m)}: no ${names[alts[0]] || alts[0]}`); }); });
+    const glu = gaps.filter(g => g.startsWith("glutes")), gaps2 = gaps.filter(g => !g.startsWith("glutes") || !(ms.Glutes >= tierRange(o, "Glutes")[0]));
+    add(!gaps2.length, "Each muscle gets its main movement patterns (e.g. chest press + fly, back vertical pull + row, hamstrings hinge + curl)", "Moderate",
+      "Different exercises grow different regions of a muscle (regional-hypertrophy research, e.g. leg extension vs squat for rectus femoris; hinge vs leg curl for hamstrings)",
+      gaps2.length ? gaps2.join(", ") : "all covered");
+    // 5 lengthened positions
+    const len = [];
+    if (tgt.includes("Biceps") && !ex.some(e => { const m = meta(e); return m && m.muscle === "Biceps" && /incline|bayesian|overhead/i.test(e.name); })) len.push("biceps (incline/Bayesian curl)");
+    if (tgt.includes("Triceps") && !ex.some(e => { const m = meta(e); return m && m.muscle === "Triceps" && patternOf(m).pat === "tri-overhead"; })) len.push("triceps (overhead extension)");
+    if (tgt.includes("Hamstrings") && !ex.some(e => /seated leg curl|romanian|good morning/i.test(e.name))) len.push("hamstrings (seated curl or RDL)");
+    add(!len.length, "A stretched-position exercise for biceps, triceps and hamstrings", "Moderate (newer)",
+      "Maeo 2021 (seated > lying leg curl), Maeo 2023 (overhead > pushdown for triceps), Pedrosa 2022; ACSM 2026 notes the effect varies by muscle",
+      len.length ? "missing: " + len.join(", ") : "biceps, triceps and hamstrings covered");
+    // 6 reps
+    const badReps = ex.filter(e => e.reps.some(r => r < 4 || r > 30)).map(e => e.name);
+    add(!badReps.length, "Every exercise works in roughly 4–30 reps (growth is similar across loads when sets are hard)", "Strong",
+      "Schoenfeld 2017 low- vs high-load meta-analysis; ACSM 2026", badReps.length ? badReps.join(", ") : "all within range");
+    // 7 effort
+    add(true, mm ? "Sets taken to failure or 1 rep short (Min-Max relies on every set being hard)" : "Sets taken close to failure (compounds 1–2 reps left, isolation 0–1); failure itself not required", "Strong",
+      "Robinson 2024 proximity-to-failure meta-regressions; ACSM 2026 (training to failure not consistently better)", "every generated exercise carries an effort note");
+    // 8 rest
+    const shortRest = [];
+    days.forEach(d => d.exercises.forEach((e, i) => { const m = meta(e) || {}, pv = d.exercises[i - 1], inPair = e.ss || (pv && pv.ss) || e.rest === 0 || (pv && pv.rest === 0); if (inPair) return;
+      if ((m.warm || m.bw) && (e.rest || 0) < 90) shortRest.push(`${e.name} ${e.rest}s`); else if (!m.warm && !m.bw && (e.rest || 0) < 60) shortRest.push(`${e.name} ${e.rest}s`); }));
+    add(!shortRest.length, "Rest ≥90 s on compound lifts and ≥60 s on isolation (supersets alternate muscles, so they count as rest)", "Moderate",
+      "Singer 2024 rest-interval meta-analysis: small benefit above 60 s, none detected beyond ~90 s; Schoenfeld 2016: 3 min beat 1 min on compounds", shortRest.length ? shortRest.join(", ") : "all OK");
+    // 9 order
+    const orderBad = [];
+    days.forEach(d => { const seenIso = new Set(); d.exercises.forEach(e => { const m = meta(e); if (!m) return; const iso = !m.warm && !m.bw;
+      if (iso) seenIso.add(m.muscle); else if (seenIso.has(m.muscle) && patternOf(m).pat !== "hinge") orderBad.push(`${e.name} after ${m.muscle.toLowerCase()} isolation on ${d.name.split(" · ")[0]}`); }); });
+    add(!orderBad.length, "Compound lifts before isolation for the same muscle", "Practice",
+      "Nunes 2021 meta-analysis: order barely changes growth, but lifts done first gain the most strength", orderBad.length ? orderBad.join(", ") : "all OK");
+    // 10 progression + review
+    add(true, "Progressive overload with a clear rule, plus deloads and block reviews", "Strong / practice",
+      "Progressive overload is fundamental (ACSM 2026); double progression and deload timing are coaching practice", "double progression; review after each block");
+    // 11 time
+    const long = cap ? days.filter(d => dayMinutes(d.exercises) > cap + 2).map(d => `${d.name.split(" · ")[0]} ~${dayMinutes(d.exercises)} min`) : [];
+    add(!long.length, `Sessions fit your time (${cap || "—"} min): a plan you can stick to beats a perfect one`, "Practical",
+      "ACSM 2026: consistency and adherence matter more than fine details", long.length ? long.join(", ") : "all fit");
+    return out;
+  }
+  function evidenceHTML(chk){
+    const pass = chk.filter(c => c.ok).length;
+    return `<div class="hh2"><b>Evidence check: ${pass}/${chk.length} pass</b><span class="sub">tap a rule for the source</span></div>` + chk.map(c =>
+      `<details class="ev"><summary><span class="${c.ok ? "okc" : "warnc"}">${c.ok ? "✓" : "✗"}</span><span>${esc(c.rule)}<small> · ${esc(c.tier)}</small></span></summary><p class="sub">${esc(c.detail)}</p><p class="sub"><b>Source:</b> ${esc(c.src)}</p></details>`).join("");
+  }
+  function benchHTML(days, n, o0){
+    o0 = o0 || {};
+    const ms = muscleSets(days.flatMap(d => d.exercises)), perDay = days.map(d => muscleSets(d.exercises)), r1 = x => Math.round(x * 2) / 2;
+    const nm = days.map(d => d.name).join(" ");
+    const pk = /push|pull/i.test(nm) ? "PPL" : /full body/i.test(nm) ? "Full_Body" : "UpperLower";
+    const pName = { PPL:"push/pull/legs", Full_Body:"full body", UpperLower:"upper/lower" }[pk];
+    const ex = days.flatMap(d => d.exercises), tot = ex.reduce((a, e) => a + e.reps.length, 0);
+    const mine = { sps: r1(tot / days.length), eps: r1(ex.length / days.length), spe: Math.round(tot / ex.length * 10) / 10 };
+    const f = m => perDay.filter(x => (x[m] || 0) >= 2).length;
+    const cell = (v, fr) => `<b>${v}</b> <small>${fr}×</small>`;
+    const lab = { "Side Delts":"Side delts", "Rear Delts":"Rear delts", "Front Delts":"Front delts" };
+    const rows = TARGETED.concat(["Front Delts","Adductors"]).map(m => `<tr><td>${lab[m] || m}</td><td>${cell(r1(ms[m] || 0), f(m))}</td><td>${cell(BENCH[pk].sets[m] ?? 0, BENCH[pk].freq[m] || 0)}</td><td>${cell(BENCH.MinMax.sets[m] ?? 0, BENCH.MinMax.freq[m] || 0)}</td></tr>`).join("");
+    const misc = [["Sets / session", "sps"], ["Exercises / session", "eps"], ["Sets / exercise", "spe"]].map(([l, k]) => `<tr class="bmisc"><td>${l}</td><td><b>${mine[k]}</b></td><td><b>${BENCH[pk][k]}</b></td><td><b>${BENCH.MinMax[k]}</b></td></tr>`).join("");
+    const hi = [], lo = [];
+    TARGETED.forEach(m => { const v = ms[m] || 0, P = BENCH[pk].sets[m] || 0; if (v > P + 3) hi.push(m.toLowerCase()); else if (v < BENCH.MinMax.sets[m] - 1) lo.push(m.toLowerCase()); });
+    const note = (hi.length ? `More than Pure Bodybuilding: <b>${hi.join(", ")}</b>. ` : "") + (lo.length ? `Less than even Min-Max: <b>${lo.join(", ")}</b>${lo.every(x => (o0.prio || {})[x[0].toUpperCase() + x.slice(1)] === "maint") ? " (on maintenance, so expected)" : ""}. ` : "") + (!hi.length && !lo.length ? "Every muscle sits between the two programs or close to one of them." : "");
+    return `<div class="hh2"><b>How it compares to two coach-written programs</b></div>
+      <p class="sub">Both are by Jeff Nippard, a coach who builds programs from the hypertrophy research. They mark out a sensible range: <b>Pure Bodybuilding</b> (${pName} version) is the higher-volume end, about 3 sets per exercise. <b>Min-Max</b> is the low-volume end: 1–2 sets per exercise, nearly all to failure, ~45 min sessions. Being between them, or near either, is reasonable.</p>
+      <p class="sub">Each cell: <b>hard sets per week</b> (helper muscles count half), then <small>days a week</small> that muscle gets 2+ sets.</p>
+      <table class="cmp bench"><thead><tr><th></th><th>Yours</th><th>Pure BB</th><th>Min-Max</th></tr></thead><tbody>${rows}${misc}</tbody></table>
+      <p class="sub">${note}Pure Bodybuilding also adds ${BENCH[pk].wp} "weak point" sets a week to one muscle you pick (not counted above). Their numbers are from the program PDFs (PBP week 1, Min-Max week 2), counted the same way the app counts yours${pk === "PPL" ? "; PBP push/pull/legs runs 8 sessions per 10 days, scaled to a week" : ""}.</p>`;
+  }
+  const TIERS = { maint:[4,8], normal:[10,14], high:[14,20] }, TIER_LABEL = { maint:"Maint.", normal:"Normal", high:"High" };
+  // weekly set target for a muscle given builder options (priority tier, goal, block-review adjustment)
+  // volume style. Min-Max (Nippard): 1–2 sets per exercise to failure, ~6–10 sets/muscle/week — for cutting, short sessions,
+  // or lifters who prefer low volume. Higher volume (Pure Bodybuilding-like): ~3 sets per exercise, 10–20 sets/week — for building.
+  const styleAuto = (phase, cap) => (phase === "cut" || (cap && cap <= 45)) ? "minmax" : "volume";
+  const styleOf = o => (o && (o.styleR || (o.style !== "auto" && o.style))) || "volume";
+  const MM_TIERS = { maint:[2,4], normal:[6,10], high:[10,14] };
+  function tierRange(o, m){
+    const t = (o && o.prio && o.prio[m]) || "normal", a = (o && o.adj && o.adj[m]) || 0;
+    if (styleOf(o) === "minmax"){ let [l, h] = MM_TIERS[t]; if (t === "normal" && (m === "Hamstrings" || m === "Calves")) [l, h] = [4, 6]; l = Math.max(2, l + a); return [l, Math.max(l, h + a)]; }
+    let hi = TIERS[t][1]; if (o && o.phase === "build" && t === "normal") hi = 16; if (o && o.phase === "cut") hi = { maint:6, normal:12, high:16 }[t];
+    const lo = Math.max(2, TIERS[t][0] + a); return [lo, Math.max(lo, hi + a)];
+  }
+  const onTarget = (o, m, v) => v >= tierRange(o, m)[0] - 0.5 && v <= 20.5;
   const MUSCLE_ORDER = ["Chest","Back","Front Delts","Side Delts","Rear Delts","Biceps","Triceps","Quads","Hamstrings","Glutes","Adductors","Calves"];
   const TARGETED = MUSCLE_ORDER.filter(m => !INFO_ONLY.includes(m));
   // before → after "arrow" chart: hollow dot = current routine, solid dot = new routine, line shows the move
-  function cmpBars(a, b, soft){
-    const r1 = x => Math.round(x * 2) / 2, dist = x => x < 9.5 ? 9.5 - x : x > 20.5 ? x - 20.5 : 0;
+  function cmpBars(a, b, o){
+    const r1 = x => Math.round(x * 2) / 2;
     const max = Math.max(24, Math.ceil(Math.max(...MUSCLE_ORDER.map(m => Math.max(a[m] || 0, b[m] || 0))) / 4) * 4), pc = x => Math.min(100, x / max * 100);
     const ticks = [0, 10, 20].concat(max > 24 ? [max] : []);
     const axis = `<div class="crow caxis"><span></span><span class="ctrack0">${ticks.map(t => `<i style="left:${pc(t)}%">${t}</i>`).join("")}</span><span></span></div>`;
     return `<div class="cbars">` + MUSCLE_ORDER.map(m => {
-      const x = r1(a[m] || 0), y = r1(b[m] || 0), d = r1(y - x), info = INFO_ONLY.includes(m) || (soft || []).includes(m);
+      const x = r1(a[m] || 0), y = r1(b[m] || 0), d = r1(y - x), info = INFO_ONLY.includes(m), [tlo, thi] = info ? [10, 20] : tierRange(o, m), tier = info ? "" : ((o && o.prio && o.prio[m]) || "normal");
+      const dist = v => v < tlo - 0.5 ? tlo - 0.5 - v : v > 20.5 ? v - 20.5 : 0;
       const col = info ? "var(--muted)" : dist(y) ? "var(--warn)" : "var(--good)";
       const tone = info || dist(x) === dist(y) ? "" : dist(y) < dist(x) ? "okc" : "warnc";
       const lo = Math.min(x, y), hi = Math.max(x, y);
-      const lab = (({ "Front Delts":"Front delts", "Side Delts":"Side delts", "Rear Delts":"Rear delts" })[m] || m) + (INFO_ONLY.includes(m) ? " <small>(info)</small>" : (soft || []).includes(m) ? " <small>(1×/wk)</small>" : "");
-      return `<div class="crow"><span>${lab}</span><span class="ctrack"><span class="cband" style="left:${pc(10)}%;width:${pc(20) - pc(10)}%"></span>
+      const lab = (({ "Front Delts":"Front delts", "Side Delts":"Side delts", "Rear Delts":"Rear delts" })[m] || m) + (INFO_ONLY.includes(m) ? " <small>(info)</small>" : tier !== "normal" ? ` <small>(${TIER_LABEL[tier].toLowerCase()})</small>` : "");
+      return `<div class="crow"><span>${lab}</span><span class="ctrack"><span class="cband" style="left:${pc(tlo)}%;width:${pc(thi) - pc(tlo)}%"></span>
         <span class="cline" style="left:${pc(lo)}%;width:${pc(hi) - pc(lo)}%;background:${col}"></span>
         <span class="cdot cnow0" style="left:${pc(x)}%" title="now ${x}"></span><span class="cdot cnew0" style="left:${pc(y)}%;background:${col};border-color:${col}" title="new ${y}"></span></span>
         <span class="cnum">${x} → <b>${y}</b> <span class="${tone}">${d === 0 ? "" : (d > 0 ? "+" : "") + d}</span></span></div>`;
@@ -2111,7 +2344,7 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
     return MUSCLE_ORDER.map(m => {
       const n = Math.round(ms[m] || 0), w = was ? Math.round(was[m] || 0) : null;
       const info = INFO_ONLY.includes(m);
-      const pct = Math.min(100, n / 24 * 100), col = info ? "var(--muted)" : n < 10 || n > 20 ? "var(--warn)" : "var(--good)";
+      const po = { prio: plan.prio, phase: phaseOf() ? plan.phase.goal : null, styleR: plan.style }, pct = Math.min(100, n / 24 * 100), col = info ? "var(--muted)" : !onTarget(po, m, n) ? "var(--warn)" : "var(--good)";
       return `<div class="vrow${info ? " info" : ""}"><span>${({ "Front Delts":"Front delts", "Side Delts":"Side delts", "Rear Delts":"Rear delts" })[m] || m}${info ? " <small>(info)</small>" : ""}</span><span class="vtrack"><span class="vband"></span><span class="vbar" style="width:${pct}%;background:${col}"></span></span><span class="vnum">${n}${w != null && w !== n ? ` (was ${w})` : ""}</span></div>`;
     }).join("");
   }
@@ -2618,7 +2851,7 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
           ${ex.purpose ? `<span class="purpose">– ${esc(ex.purpose)}</span>` : ""}
           <span class="rx">${repTxt} · ${restTxt} · <a class="demo" href="${ytLink(ex.name + " proper form")}" target="_blank" rel="noopener">form video</a></span></div>
           <button class="edit" aria-label="Edit or swap ${esc(ex.name)}">Edit</button></div>
-        ${ex.note ? `<div class="note">${esc(ex.note)}</div>` : ""}
+        ${ex.note ? `<div class="note">${ex.llp ? "<b>LLP</b> · " : ""}${esc(ex.note)}</div>` : ""}
         <details class="why"><summary>Why this?</summary>${whyHTML(rationale(ex, list, ei, muscleSets(program.days.flatMap(x => x.exercises))))}</details>
         <div class="hint ${sg.kind}">${sg.text}</div>
         ${warmups(ex, arr, list.slice(0, ei))}

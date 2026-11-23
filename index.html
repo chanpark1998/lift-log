@@ -124,6 +124,8 @@ h1{font-family:var(--display);font-size:2rem;letter-spacing:.02em;margin:0;text-
 .live.down{border-left-color:var(--warn)}
 .act{align-self:flex-start;border:0;background:var(--accent);color:var(--accent-ink);border-radius:8px;padding:7px 12px;font-weight:600;font-size:.85rem}
 .set.dropset .n{color:var(--warn)}
+.fld .wsign{position:absolute;right:5px;top:50%;transform:translateY(-50%);border:1px solid var(--line);background:var(--card,transparent);color:var(--accent,#5b8cff);font:inherit;font-size:.7rem;line-height:1;padding:4px 6px;border-radius:6px;cursor:pointer}
+.fld:has(.wsign) input{padding-right:54px}
 .addex{padding:12px;font-size:.92rem;font-weight:600}
 .sheet{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-end;justify-content:center;z-index:10}
 .sheet.on{display:flex}
@@ -484,6 +486,9 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
     B("Straight-Arm Pulldown","Back","Cable","iso","lat isolation"),
     B("Pull-ups","Back","Bodyweight","bwmain","lat width and pulling strength"),
     B("Chin-ups","Back","Bodyweight","bwmain","lat width and pulling strength, biceps assist"),
+    B("Assisted Pull-up","Back","Machine","bwmain","lat width; log assistance as a minus weight (tap +lb to switch to assist)",{ inc:10, aliases:["assisted pull up machine","gravitron"] }),
+    B("Assisted Chin-up","Back","Machine","bwmain","lats and biceps; log assistance as a minus weight",{ inc:10, aliases:["assisted chin up"] }),
+    B("Assisted Dip","Chest","Machine","bw","lower chest and triceps; log assistance as a minus weight",{ inc:10, aliases:["assisted dip machine"] }),
     B("Face Pull","Rear Delts","Cable","small","rear delts and shoulder health"),
     B("Dumbbell Shrug","Back","Dumbbell","iso","upper traps"),
     B("Barbell Shrug","Back","Barbell","iso","upper traps"),
@@ -2618,6 +2623,14 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
     if (!deloadActive()) return sg0;
     return Object.assign({}, sg0, { kind:"hold", text:`<b>Deload week:</b> half the sets at about 10% lighter. Stop 2–3 reps short of failure.` });
   }
+  // weight label: bodyweight moves log added weight (+) or machine/band assistance (−)
+  // load your muscles actually move: bodyweight moves use your latest logged bodyweight ± added/assist weight (null if no bodyweight logged)
+  function effLoad(ex, w){
+    if (!ex.bw) return w > 0 ? w : null;
+    const bws = Object.keys(plan.bw || {}).sort(), b = bws.length ? +plan.bw[bws[bws.length - 1]] : null;
+    return b ? b + (+w || 0) : null;
+  }
+  function wl(w, ex){ if (!ex.bw || w === "" || w == null) return w; w = +w; return w > 0 ? `+${w} lb` : w < 0 ? `${-w} lb assist` : "bodyweight"; }
   function suggestBase(ex){
     const past = pastFor(ex.id, date);
     const inc = ex.inc || 5;
@@ -2633,17 +2646,26 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
       const arr = last.arr, n = ex.reps.length, lo = ex.reps[0];
       const got = arr.slice(0, n).map(x => x && x.done ? (num(x.r) ?? 0) : 0);
       const T = t => ex.reps.map(() => t), lab = t => `${n}×${t}`;
-      const allTop = got.length >= n && got.every(r => r >= ex.top);
-      if (allTop){ const w = r25(last.top + inc); return { kind:"up", text:`<b>Add ${inc} lb → ${lab(lo)} at ${w}${ex.bw && w>0 ? " added" : ""}.</b> You hit ${ex.top} on every set last time. Reps reset to ${lo} at the new weight.`, weights: T(w), targets: T(lo) }; }
+      const L0 = effLoad(ex, last.top), big = L0 > 0 && inc / L0 > 0.1, topE = ex.top + (big ? 2 : 0), pct = L0 > 0 ? Math.round(inc / L0 * 100) : 0;
+      const allTop = got.length >= n && got.every(r => r >= topE);
+      if (!allTop && big && got.length >= n && got.every(r => r >= ex.top)){
+        const t = Math.min(topE, Math.min(...got) + 1);
+        return { kind:"hold", text:`<b>${lab(t)} at ${wl(last.top, ex)}.</b> The next step on this machine is ${last.top < 0 ? `${inc} lb less assist` : `+${inc} lb`} (${pct}% heavier), a big jump, so earn it with ${topE} reps on every set first. Then the new weight won't drop you below ${lo}.`, weights: T(last.top), targets: T(t) };
+      }
+      if (allTop){ const w = r25(last.top + inc); return { kind:"up", text:`<b>${last.top < 0 ? `Take ${inc} lb off the assist` : `Add ${inc} lb`} → ${lab(lo)} at ${wl(w, ex)}.</b> You hit ${ex.top} on every set last time. Reps reset to ${lo} at the new weight.`, weights: T(w), targets: T(lo) }; }
       if (got.length >= n && got.every(r => r >= lo)){
         const t = Math.min(ex.top, Math.min(...got) + 1);
-        return { kind:"hold", text:`<b>${lab(t)} at ${last.top}${ex.bw ? " added" : ""}.</b> One more rep than last time's weakest set (${got.join(", ")}). Weight goes up once every set hits ${ex.top}.`, weights: T(last.top || ""), targets: T(t) };
+        return { kind:"hold", text:`<b>${lab(t)} at ${wl(last.top, ex)}.</b> One more rep than last time's weakest set (${got.join(", ")}). Weight goes up once every set hits ${ex.top}.`, weights: T(last.top || ""), targets: T(t) };
       }
-      if (!(ex.main && past.length >= 3)) return { kind:"hold", text:`<b>Repeat ${lab(lo)} at ${last.top}${ex.bw ? " added" : ""}.</b> Last time came up short (${got.join(", ")}).`, weights: T(last.top || ""), targets: T(lo) };
+      if (!(ex.main && past.length >= 3)) return { kind:"hold", text:`<b>Repeat ${lab(lo)} at ${wl(last.top, ex)}.</b> Last time came up short (${got.join(", ")}).`, weights: T(last.top || ""), targets: T(lo) };
     }
     if (last.allHit){
-      const w = r25(last.top + inc);
-      return { kind:"up", text:`<b>Add ${inc} lb → ${w}${ex.bw && w>0 ? " added" : ""}.</b> You hit every rep last time.`, weights: ex.reps.map(() => w) };
+      const w = r25(last.top + inc), L0 = effLoad(ex, last.top), big = L0 > 0 && inc / L0 > 0.1;
+      if (big && !last.arr.slice(0, ex.reps.length).every((x, k) => x && (num(x.r) ?? 0) >= ex.reps[k] + 2)){
+        const t2 = ex.reps.map(r => r + 2);
+        return { kind:"hold", text:`<b>Stay at ${wl(last.top, ex)} and aim for ${t2[0]} reps.</b> The next step here is ${last.top < 0 ? `${inc} lb less assist` : `+${inc} lb`} (${Math.round(inc / L0 * 100)}% heavier), a big jump, so 2 extra reps first makes the new weight doable.`, weights: ex.reps.map(() => last.top), targets: t2 };
+      }
+      return { kind:"up", text:`<b>${last.top < 0 ? `Take ${inc} lb off the assist` : `Add ${inc} lb`} → ${wl(w, ex)}.</b> You hit every rep last time.`, weights: ex.reps.map(() => w) };
     }
     if (ex.main && past.length >= 3){
       const l3 = past.slice(0,3).map(s => evalSession(ex, s));
@@ -2655,7 +2677,7 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
         return { kind:"deload", text:`<b>Stalled 3 sessions at ${last.top}. Deload to ${w}</b> and build back up.`, weights: ex.reps.map(() => w) };
       }
     }
-    return { kind:"hold", text:`<b>Stay at ${last.top}${ex.bw ? " added" : ""}</b> and aim to hit all ${ex.reps.length}×${ex.reps[0]}.${isCut() ? " On a cut, matching last time is a win." : ""}`, weights: ex.reps.map(() => last.top || "") };
+    return { kind:"hold", text:`<b>Stay at ${wl(last.top, ex)}</b> and aim to hit all ${ex.reps.length}×${ex.reps[0]}.${isCut() ? " On a cut, matching last time is a win." : ""}`, weights: ex.reps.map(() => last.top || "") };
   }
   function lastLine(ex){
     const past = pastFor(ex.id, date);
@@ -3031,20 +3053,27 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
         const miss = s.done && num(s.r) != null && num(s.r) < target && !s.drop;
         row.className = "set" + (s.done ? (miss ? " done miss" : " done") : "") + (s.drop ? " dropset" : "");
         const wid = `w-${ex.id}-${i}`, rid = `r-${ex.id}-${i}`;
+        cur.assist = cur.assist || {};
+        if (ex.bw && cur.assist[ex.id] == null){ const pv = pastFor(ex.id, date)[0]; const pw = pv ? pv.sets[ex.id] : []; cur.assist[ex.id] = arr.some(x => num(x.w) < 0) || pw.some(x => x && num(x.w) < 0); }
+        const asst = ex.bw && (num(s.w) != null ? num(s.w) < 0 : cur.assist[ex.id]);
+        const showW = asst && num(s.w) != null ? String(Math.abs(num(s.w))) : s.w;
         const label = s.drop ? ({ backoff:"Back-off", assisted:"Assist" }[s.kind] || "Drop") : `Set ${++n}`;
         row.innerHTML = `<div class="n">${label}<b>×${target}${s.drop && s.kind !== "backoff" ? "+" : ""}</b></div>
-          <div class="fld"><input id="${wid}" inputmode="decimal" aria-label="${label} weight" value="${esc(s.w)}" placeholder="${ex.bw ? "0" : "wt"}"><span>${ex.bw ? "+lb" : "lb"}</span></div>
+          <div class="fld"><input id="${wid}" inputmode="decimal" aria-label="${label} weight" value="${esc(showW)}" placeholder="${ex.bw ? "0" : "wt"}">${ex.bw ? `<button type="button" class="wsign" aria-label="Switch between added weight and assistance">${asst ? "assist" : "+lb"}</button>` : `<span>lb</span>`}</div>
           <div class="fld"><input id="${rid}" inputmode="numeric" aria-label="${label} reps" value="${esc(s.r)}" placeholder="${target}"><span>reps</span></div>
           <button class="chk" aria-label="Mark ${label} ${s.done ? "not done" : "done"}">${s.done ? "✓" : "○"}</button>`;
         const wIn = row.querySelector("#"+CSS.escape(wid)), rIn = row.querySelector("#"+CSS.escape(rid));
+        const readW = () => { const v = wIn.value.trim(); return asst && num(v) != null ? String(-Math.abs(num(v))) : v; };
+        const sb = row.querySelector(".wsign");
+        if (sb) sb.onclick = () => { cur.assist[ex.id] = !asst; arr.forEach((x, j) => { if ((j === i || (j > i && !x.done)) && num(x.w) != null && num(x.w) !== 0) x.w = String(-num(x.w)); }); queueSave(); render(); };
         wIn.onchange = () => {
-          s.w = wIn.value.trim();
+          s.w = readW();
           if (!ex.pyramid && !s.drop) arr.forEach((x,j) => { if (j>i && !x.done && !x.drop){ x.w = s.w; const inp = $(`w-${ex.id}-${j}`); if (inp) inp.value = x.w; } });
           queueSave();
         };
         rIn.onchange = () => { s.r = rIn.value.trim(); queueSave(); if (s.done) render(); };
         row.querySelector(".chk").onclick = () => {
-          s.w = wIn.value.trim(); s.r = rIn.value.trim();
+          s.w = readW(); s.r = rIn.value.trim();
           if (!s.done){
             if (s.r === "") s.r = String(target);
             if (s.w === "" && ex.bw) s.w = "0";

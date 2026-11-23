@@ -1489,10 +1489,16 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
       const on = plan.rest.includes(w);
       b.className = "chip" + (on ? " restchip" : ""); b.textContent = WD[w]; b.setAttribute("aria-pressed", String(on));
       b.onclick = () => {
-        if (on) plan.rest = plan.rest.filter(x => x !== w); else plan.rest.push(w);
-        const open = 7 - plan.rest.length;
-        if (open < program.days.length) toast(`${open} open days for ${program.days.length} workouts: ${program.days.length - open} won't fit each week`);
-        rearrange(); writeStore(); renderPlan(); renderStrip();
+        touchPlan();
+        if (on) plan.rest = plan.rest.filter(x => x !== w); // freed day becomes a spare run + flexibility day; nothing else moves
+        else {
+          plan.rest.push(w);
+          const id = plan.assign[w]; delete plan.assign[w];
+          if (id){ const spare = WEEK_ORDER.find(x => !plan.rest.includes(x) && !plan.assign[x]);
+            if (spare != null){ plan.assign[spare] = id; toast(`${dayById(id).name} moved to ${WD[spare]}`); }
+            else toast(`${dayById(id).name} has no open day now. Free a rest day or tap a day below to place it`); }
+        }
+        writeStore(); renderPlan(); renderStrip();
       };
       rp.appendChild(b);
     });
@@ -1502,7 +1508,7 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
 
     // assignments
     const as = document.createElement("div"); as.className = "panel";
-    as.innerHTML = `<div class="hh2"><b>${esc(program.name || "Your program")}</b><span class="sub">tap a day to change it</span></div>`;
+    as.innerHTML = `<div class="hh2"><b>${esc(program.name || "Your program")}</b><span class="sub">tap any day to move a workout there</span></div>`;
     WEEK_ORDER.forEach(w => {
       const id = plan.rest.includes(w) ? null : plan.assign[w];
       const d = id ? dayById(id) : null;
@@ -1511,9 +1517,45 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
       const label = plan.rest.includes(w) ? "Rest" : d ? d.name : "Run + flexibility";
       const sub = d ? [...dayHits(d)].join(" · ") : plan.rest.includes(w) ? "flexibility if you want it" : "spare day";
       row.innerHTML = `<b class="pwd">${WD[w]}</b><span><span class="pnm">${esc(label)}</span><small>${esc(sub)}</small></span><span class="pmin${mins > CAP_MIN ? " over" : ""}">${d ? "~" + mins + " min" : ""}</span>`;
-      if (!plan.rest.includes(w)) row.onclick = () => { planOpen = planOpen === w ? null : w; renderPlan(); };
+      row.onclick = () => { planOpen = planOpen === w ? null : w; renderPlan(); };
       as.appendChild(row);
-      if (planOpen === w){
+      const apply = (assign, rest, msg) => { touchPlan(); plan.assign = assign; if (rest) plan.rest = rest; planOpen = null; writeStore(); renderPlan(); renderStrip(); if (msg) toast(msg); };
+      const fitTxt = trial => { Object.keys(trial).forEach(k => { if (!trial[k]) delete trial[k]; }); const bad = recoveryReport(trial).lines.find(l => !l.ok && !l.soft); return bad; };
+      if (planOpen === w && plan.rest.includes(w)){
+        // rest day: put a workout here; the day it leaves becomes the rest day (same number of rest days)
+        const opts = document.createElement("div"); opts.className = "popts";
+        program.days.forEach(x => {
+          const from = Object.keys(plan.assign).map(Number).find(k => plan.assign[k] === x.id);
+          const trial = Object.assign({}, plan.assign); if (from != null) delete trial[from]; trial[w] = x.id;
+          const rest = plan.rest.filter(r => r !== w).concat(from != null ? [from] : []);
+          const bad = fitTxt(trial);
+          const ob = document.createElement("button"); ob.type = "button"; ob.className = "popt" + (bad ? " warn" : "");
+          ob.innerHTML = `<span>${esc(x.name)}${from != null ? ` <small>(${WD[from]} becomes rest)</small>` : ""}</span><small>${bad ? "! " + esc(bad.text) : "✓ fits"}</small>`;
+          ob.onclick = () => apply(trial, rest);
+          opts.appendChild(ob);
+        });
+        const ob = document.createElement("button"); ob.type = "button"; ob.className = "popt";
+        ob.innerHTML = `<span>Keep as rest</span><small></small>`; ob.onclick = () => { planOpen = null; renderPlan(); };
+        opts.appendChild(ob);
+        as.appendChild(opts);
+      }
+      if (planOpen === w && !plan.rest.includes(w)){
+        // option: make this a rest day; its workout moves to a spare day, or swaps places with an existing rest day
+        const opts2 = document.createElement("div"); opts2.className = "popts";
+        const cur = plan.assign[w], spare = WEEK_ORDER.find(x => x !== w && !plan.rest.includes(x) && !plan.assign[x]);
+        const targets = !cur ? [null] : spare != null ? [spare] : plan.rest.slice();
+        targets.forEach(t => {
+          const trial = Object.assign({}, plan.assign); delete trial[w]; let rest = plan.rest.concat([w]);
+          if (cur && t != null){ trial[t] = cur; rest = rest.filter(r => r !== t); }
+          const bad = cur ? fitTxt(trial) : null;
+          const ob = document.createElement("button"); ob.type = "button"; ob.className = "popt" + (bad ? " warn" : "");
+          ob.innerHTML = `<span>Rest day${cur && t != null ? ` <small>(${esc(dayById(cur).name)} moves to ${WD[t]})</small>` : ""}</span><small>${bad ? "! " + esc(bad.text) : "✓ fits"}</small>`;
+          ob.onclick = () => apply(trial, rest);
+          opts2.appendChild(ob);
+        });
+        as._restOpts = opts2;
+      }
+      if (planOpen === w && !plan.rest.includes(w)){
         const opts = document.createElement("div"); opts.className = "popts";
         const choices = program.days.map(x => x.id).concat([null]);
         choices.forEach(cid => {
@@ -1529,12 +1571,16 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
           ob.onclick = () => { plan.assign = trial; planOpen = null; touchPlan(); writeStore(); renderPlan(); renderStrip(); };
           opts.appendChild(ob);
         });
+        if (as._restOpts) [...as._restOpts.children].forEach(c => opts.appendChild(c));
         as.appendChild(opts);
       }
     });
     const ar = document.createElement("button"); ar.type = "button"; ar.className = "ghost"; ar.textContent = "Auto-arrange for recovery";
     ar.onclick = () => { plan.assign = {}; rearrange(); writeStore(); renderPlan(); renderStrip(); toast("Arranged for recovery"); };
     as.appendChild(ar);
+    const nb = document.createElement("button"); nb.type = "button"; nb.className = "btnp"; nb.textContent = "Build a new routine";
+    nb.onclick = () => { draft = null; showTab("build"); };
+    as.appendChild(nb);
     el.appendChild(as);
 
     // recovery check
@@ -1993,6 +2039,11 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
         b.onclick = () => remake({ split:i });
         op.appendChild(b);
       });
+      const qs = document.createElement("button"); qs.type = "button"; qs.className = "btnp"; qs.textContent = "Start this routine";
+      qs.onclick = () => { const g = el.querySelector(".gostart"); if (g) g.click(); };
+      op.appendChild(qs);
+      const sm = document.createElement("p"); sm.className = "sub"; sm.textContent = "Starts the selected option. Scroll down to review each day, the evidence check and the comparison first, or start now and swap exercises later.";
+      op.appendChild(sm);
       el.appendChild(op);
     }
 
@@ -2180,7 +2231,7 @@ details.why{margin:4px 0;font-size:.84rem}details.why summary{cursor:pointer;col
 
 
     const go = document.createElement("div"); go.className = "panel";
-    go.innerHTML = `<p class="sub">Built on research: weekly hard sets per muscle set by your priorities (maintenance 4–8, normal 10–14, high 14–20; helper muscles count half) · 6–20 reps, sets close to failure · each muscle at least twice a week${draft.opts.legs === 1 ? " (legs once, as you chose)" : ""} · no more than ~10 sets for one muscle in one session · stretched-position picks (seated leg curl, overhead extension, incline curl) · compound lifts first, 2–3 min rest on them. Rules of thumb (not directly tested): 48 h before a muscle is trained again, add weight once all reps are hit. Exercises you already do keep their history and weight suggestions. Swap any exercise after you start, with Edit on its card.</p><button type="button" class="btnp">Start this routine</button><p class="sub">Your current program is saved; switch back anytime from Your week. This starts a new training block: after its deload week (about 6 weeks in) you'll get a review of how it went.</p>`;
+    go.innerHTML = `<p class="sub">Built on research: weekly hard sets per muscle set by your priorities (maintenance 4–8, normal 10–14, high 14–20; helper muscles count half) · 6–20 reps, sets close to failure · each muscle at least twice a week${draft.opts.legs === 1 ? " (legs once, as you chose)" : ""} · no more than ~10 sets for one muscle in one session · stretched-position picks (seated leg curl, overhead extension, incline curl) · compound lifts first, 2–3 min rest on them. Rules of thumb (not directly tested): 48 h before a muscle is trained again, add weight once all reps are hit. Exercises you already do keep their history and weight suggestions. Swap any exercise after you start, with Edit on its card.</p><button type="button" class="btnp gostart">Start this routine</button><p class="sub">Your current program is saved; switch back anytime from Your week. This starts a new training block: after its deload week (about 6 weeks in) you'll get a review of how it went.</p>`;
     go.querySelector("button").onclick = () => {
       if (n > 7 - buildRest.length){ toast(`Free up ${n - (7 - buildRest.length)} more rest day first`); return; }
       plan.rest = buildRest.slice(); buildRest = null;
